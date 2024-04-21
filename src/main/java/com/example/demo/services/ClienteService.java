@@ -61,7 +61,7 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
-    public Cliente getClienteById(Long idCliente) {
+    public Cliente getClienteById(Long idCliente) throws ResourceNotFoundException {
         return clienteRepository.findById(idCliente).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, idCliente)));
     }
 }

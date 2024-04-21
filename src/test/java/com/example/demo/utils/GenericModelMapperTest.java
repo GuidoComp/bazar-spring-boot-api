@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,11 +30,14 @@ class GenericModelMapperTest {
         producto.setMarca("Marca 1");
         producto.setCosto(100.0);
         producto.setCantidadDisponible(10.0);
-        producto.setVenta(new Venta(1L, LocalDate.now(), 1000.0, null, null));
+        Venta venta = new Venta(1L, LocalDate.now(), 1000.0, null, null);
+        List<Venta> ventas = new ArrayList<>();
+        ventas.add(venta);
+        producto.setVentas(ventas);
         // Act
         productoResponseDTO = this.modelMapper.mapProductoToDTO(producto);
         // Assert
-        assertEquals(producto.getProductoId(), productoResponseDTO.getId());
+        assertEquals(producto.getProductoId(), productoResponseDTO.getProductoId());
         assertEquals(producto.getNombre(), productoResponseDTO.getNombre());
         assertEquals(producto.getMarca(), productoResponseDTO.getMarca());
         assertEquals(producto.getCosto(), productoResponseDTO.getCosto());

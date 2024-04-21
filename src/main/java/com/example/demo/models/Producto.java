@@ -3,6 +3,9 @@ package com.example.demo.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +24,13 @@ public class Producto {
     private Double costo;
     @Column(name = "cantidad_disponible", nullable = false)
     private Double cantidadDisponible;
-    @ManyToOne
-    @JoinColumn(name = "venta_id")
-    private Venta venta;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "productos_ventas",
+            joinColumns = @JoinColumn(name = "producto_id"),
+            inverseJoinColumns = @JoinColumn(name = "venta_id"))
+    private List<Venta> ventas = new ArrayList<>();
+
+    public void agregarVenta(Venta venta) {
+        this.ventas.add(venta);
+    }
 }

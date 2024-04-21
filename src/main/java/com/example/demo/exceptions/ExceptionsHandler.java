@@ -57,4 +57,16 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
 
+    @ExceptionHandler({NoStockException.class})
+    public ResponseEntity<ErrorDTO> handleNoStockException(NoStockException ex) {
+        ErrorDTO errorDTO = new ErrorDTO();
+        List<String> errors = new ArrayList<>();
+
+        errorDTO.setCode(HttpStatus.NOT_FOUND);
+        errors.add(ex.getMessage());
+        errorDTO.setErrors(errors);
+
+        return new ResponseEntity<>(errorDTO, errorDTO.getCode());
+    }
+
 }

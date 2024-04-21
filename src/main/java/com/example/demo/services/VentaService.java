@@ -3,7 +3,9 @@ package com.example.demo.services;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.UpdateVentaDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
+import com.example.demo.exceptions.NoStockException;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
 import com.example.demo.repositories.IVentaRepository;
 import com.example.demo.utils.ErrorMsgs;
@@ -33,15 +35,26 @@ public class VentaService implements IVentaService {
 
     @Override
     @Transactional
-    public VentaResponseDTO addVenta(AddVentaDTO addVentaDTO) {
-        //check cliente
-        Long idCliente = addVentaDTO.getIdCliente();
-
+    public VentaResponseDTO addVenta(AddVentaDTO addVentaDTO) throws NoStockException, ResourceNotFoundException {
         Venta venta = modelMapper.mapAddVentaDTOToVenta(addVentaDTO);
-        venta.agregarCliente(clienteService.getClienteById(idCliente));
-        venta.agregarProductos(productoService.getProductosByIds(addVentaDTO.getIdsProductos()));
+
+        this.agregarCliente(addVentaDTO, venta);
+        this.agregarProductos(addVentaDTO, venta);
+
         Venta ventaDb = this.ventaRepository.save(venta);
         return modelMapper.mapVentaToDTO(ventaDb);
+    }
+
+    private void agregarCliente(AddVentaDTO addVentaDTO, Venta venta) throws ResourceNotFoundException {
+        Long idCliente = addVentaDTO.getIdCliente();
+        venta.agregarCliente(clienteService.getClienteById(idCliente));
+    }
+
+    private void agregarProductos(AddVentaDTO addVentaDTO, Venta venta) throws ResourceNotFoundException, NoStockException{
+        List<Producto> productos = productoService.getProductosByIds(addVentaDTO.getIdsProductos());
+        for(Producto p: productos) {
+            venta.agregarProducto(p);
+        }
     }
 
     @Override

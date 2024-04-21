@@ -39,7 +39,7 @@ class ProductoServiceTest {
         producto.setMarca("marca 1");
         producto.setCosto(100.0);
         producto.setCantidadDisponible(10.0);
-        producto.setVenta(new Venta());
+        producto.setVentas(new ArrayList<>());
     }
 
     @Test
@@ -98,7 +98,7 @@ class ProductoServiceTest {
         ProductoResponseDTO productoResponseDTO = productoService.deleteProducto(id);
         //Then
         verify(productoRepository, times(1)).delete(any(Producto.class));
-        assertEquals(productoResponseDTO.getId(), producto.getProductoId());
+        assertEquals(productoResponseDTO.getProductoId(), producto.getProductoId());
         assertEquals(productoResponseDTO.getNombre(), producto.getNombre());
         assertEquals(productoResponseDTO.getMarca(), producto.getMarca());
         assertEquals(productoResponseDTO.getCosto(), producto.getCosto());
@@ -130,7 +130,7 @@ class ProductoServiceTest {
         ProductoResponseDTO productoResponseDTO = productoService.updateProducto(id, updateProductoDTO);
         //Then
         verify(productoRepository, times(1)).save(any(Producto.class));
-        assertEquals(productoResponseDTO.getId(), producto.getProductoId());
+        assertEquals(productoResponseDTO.getProductoId(), producto.getProductoId());
         assertEquals(productoResponseDTO.getNombre(), "Producto 2");
         assertEquals(productoResponseDTO.getMarca(), "marca 2");
         assertEquals(productoResponseDTO.getCosto(), 200.0);
@@ -152,7 +152,7 @@ class ProductoServiceTest {
         ProductoResponseDTO productoResponseDTO = productoService.updateProducto(id, updateProductoDTO);
         //Then
         verify(productoRepository, times(1)).save(any(Producto.class));
-        assertEquals(productoResponseDTO.getId(), producto.getProductoId());
+        assertEquals(productoResponseDTO.getProductoId(), producto.getProductoId());
         assertEquals(productoResponseDTO.getNombre(), producto.getNombre());
         assertEquals(productoResponseDTO.getMarca(), producto.getMarca());
         assertEquals(productoResponseDTO.getCosto(), 200.0);

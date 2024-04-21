@@ -57,7 +57,7 @@ class VentaServiceTest {
         assertEquals(ventas.get(0).getVentaId(), ventasDTO.get(0).getVentaId());
         assertEquals(ventas.get(0).getFechaVenta(), ventasDTO.get(0).getFechaVenta());
         assertEquals(ventas.get(0).getTotal(), ventasDTO.get(0).getTotal());
-        assertEquals(ventas.get(0).getProductos().get(0).getProductoId(), ventasDTO.get(0).getProductos().get(0).getId());
+        assertEquals(ventas.get(0).getProductos().get(0).getProductoId(), ventasDTO.get(0).getProductos().get(0).getProductoId());
         assertEquals(ventas.get(0).getCliente().getDni(), ventasDTO.get(0).getCliente().getDni());
         assertEquals(ventas.get(0).getCliente().getNombre(), ventasDTO.get(0).getCliente().getNombre());
     }
@@ -92,7 +92,7 @@ class VentaServiceTest {
         assertNotNull(ventaAgregadaDTO);
         assertEquals(addVentaDTO.getFechaVenta(), ventaAgregadaDTO.getFechaVenta());
         assertEquals(addVentaDTO.getTotal(), ventaAgregadaDTO.getTotal());
-        assertEquals(addVentaDTO.getIdsProductos().get(0), ventaAgregadaDTO.getProductos().get(0).getId());
+        assertEquals(addVentaDTO.getIdsProductos().get(0), ventaAgregadaDTO.getProductos().get(0).getProductoId());
         assertEquals(addVentaDTO.getIdCliente(), ventaAgregadaDTO.getCliente().getClienteId());
         verify(ventaRepository).save(any(Venta.class));
         verify(clienteService).getClienteById(idCliente);
@@ -116,7 +116,7 @@ class VentaServiceTest {
         assertEquals(ventas.get(0).getVentaId(), ventaEliminadaDTO.getVentaId());
         assertEquals(ventas.get(0).getFechaVenta(), ventaEliminadaDTO.getFechaVenta());
         assertEquals(ventas.get(0).getTotal(), ventaEliminadaDTO.getTotal());
-        assertEquals(ventas.get(0).getProductos().get(0).getProductoId(), ventaEliminadaDTO.getProductos().get(0).getId());
+        assertEquals(ventas.get(0).getProductos().get(0).getProductoId(), ventaEliminadaDTO.getProductos().get(0).getProductoId());
         assertEquals(ventas.get(0).getCliente().getDni(), ventaEliminadaDTO.getCliente().getDni());
         assertEquals(ventas.get(0).getCliente().getNombre(), ventaEliminadaDTO.getCliente().getNombre());
         verify(ventaRepository).delete(any(Venta.class));

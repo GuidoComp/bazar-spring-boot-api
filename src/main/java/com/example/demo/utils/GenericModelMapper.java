@@ -77,10 +77,12 @@ public class GenericModelMapper {
     }
 
     public Venta mapAddVentaDTOToVenta(AddVentaDTO addVentaDTO) {
-        Venta venta = null;
+        Venta venta = new Venta();
 
         if (addVentaDTO != null) {
-            venta = modelMapper.map(addVentaDTO, Venta.class);
+            venta.setFechaVenta(addVentaDTO.getFechaVenta());
+            venta.setTotal(addVentaDTO.getTotal());
+//            venta = this.modelMapper.map(addVentaDTO, Venta.class);
         }
         return venta;
     }

@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import com.example.demo.exceptions.NoStockException;
+import com.example.demo.utils.ErrorMsgs;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +25,7 @@ public class Venta {
     @Column(name = "fecha_venta")
     private LocalDate fechaVenta;
     private Double total;
-    @OneToMany(mappedBy = "venta", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "ventas")
     private List<Producto> productos = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "cliente_id", referencedColumnName = "cliente_id")
@@ -31,11 +33,19 @@ public class Venta {
 
     public void agregarCliente(Cliente clienteById) {
         this.cliente = clienteById;
-        cliente.agregarVenta(this);
+        cliente.agregarVenta(this); //No es necesario, con setear un lado de la relación es suficiente, aunque mejor explicitarlo
     }
 
-    public void agregarProductos(List<Producto> productosByIds) {
-        this.productos = productosByIds;
-        productos.forEach(producto -> producto.setVenta(this));
+    public void agregarProducto(Producto producto) throws NoStockException {
+        this.checkStock(producto);
+        producto.setCantidadDisponible(producto.getCantidadDisponible() - 1);
+        this.productos.add(producto);
+        producto.agregarVenta(this);
+    }
+
+    private void checkStock(Producto producto) {
+        if (producto.getCantidadDisponible() == 0) {
+            throw new NoStockException(String.format(ErrorMsgs.PRODUCTO_SIN_STOCK, producto.getProductoId(), producto.getNombre(), producto.getMarca()));
+        }
     }
 }
