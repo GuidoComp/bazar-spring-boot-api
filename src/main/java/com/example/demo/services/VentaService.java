@@ -6,6 +6,7 @@ import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.InfoMayorVenta;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.MontoYCantidadTotalDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
+import com.example.demo.exceptions.EqualProductsIds;
 import com.example.demo.exceptions.NoStockException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.Cliente;
@@ -103,9 +104,25 @@ public class VentaService implements IVentaService {
         return modelMapper.mapVentaToDTO(venta);
     }
 
-    private void actualizarProductos(List<Long> idsProductos, Venta venta) throws ResourceNotFoundException {
+    private void actualizarProductos(List<Long> idsProductosNuevos, Venta venta) throws ResourceNotFoundException {
+        checkProductos(idsProductosNuevos, venta);
         venta.borrarProductos();
-        this.agregarProductos(idsProductos, venta);
+        this.agregarProductos(idsProductosNuevos, venta);
+    }
+
+    private void checkProductos(List<Long> idsProductos, Venta venta) {
+        List<Long> idsProductosVentaDb = this.getIdsDeProductos(venta);
+        if (idsProductosVentaDb.equals(idsProductos)) {
+            throw new EqualProductsIds(ErrorMsgs.UPDATE_PRODUCTOS_NO_PERMITIDO);
+        }
+    }
+
+    private List<Long> getIdsDeProductos(Venta venta) {
+        List<Long> idsProductos = new LinkedList<>();
+        for(Producto producto: venta.getProductos()) {
+            idsProductos.add(producto.getProductoId());
+        }
+        return idsProductos;
     }
 
     @Override
