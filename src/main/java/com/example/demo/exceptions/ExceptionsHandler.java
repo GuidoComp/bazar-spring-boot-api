@@ -5,6 +5,7 @@ import com.example.demo.dtos.errorDTOs.ValidationError;
 import com.example.demo.utils.ErrorMsgs;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -87,6 +88,26 @@ public class ExceptionsHandler  {
 
         errorDTO.setCode(HttpStatus.CONFLICT);
         errorDTO.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorDTO, errorDTO.getCode());
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    public ResponseEntity<ErrorDTO> handleNotReadableException(HttpMessageNotReadableException hmnre) {
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        errorDTO.setCode(HttpStatus.BAD_REQUEST);
+        errorDTO.setMessage(hmnre.getMessage());
+
+        return new ResponseEntity<>(errorDTO, errorDTO.getCode());
+    }
+
+    @ExceptionHandler({EqualProductsIds.class})
+    public ResponseEntity<ErrorDTO> handleEqualProductsIds(EqualProductsIds epi) {
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        errorDTO.setCode(HttpStatus.NOT_ACCEPTABLE);
+        errorDTO.setMessage(epi.getMessage());
 
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
