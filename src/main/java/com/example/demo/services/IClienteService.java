@@ -6,6 +6,7 @@ import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.models.Cliente;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IClienteService {
     List<ClienteResponseDTO> getClientes();
@@ -19,4 +20,6 @@ public interface IClienteService {
     Cliente getClienteById(Long idCliente);
 
     void save(Cliente clienteAnterior);
+
+    Optional<Cliente> getClienteByDni(String dni);
 }
