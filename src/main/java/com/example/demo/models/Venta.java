@@ -35,11 +35,7 @@ public class Venta {
     private Cliente cliente;
 
     public void agregarCliente(Cliente clienteById) {
-        if (cliente != null) {
-            cliente.borrarVenta(this);
-        }
         this.cliente = clienteById;
-        cliente.agregarVenta(this); //No es necesario, con setear un lado de la relación es suficiente, aunque mejor explicitarlo
     }
 
     public void agregarProducto(Producto producto) throws NoStockException {

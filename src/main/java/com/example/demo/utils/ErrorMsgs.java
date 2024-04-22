@@ -23,12 +23,13 @@ public class ErrorMsgs {
     public static final String DNI_CLIENTE_NEGATIVO = "El dni erróneo";
     public static final String DNI_LENGTH = "El dni debe tener 8 caracteres";
     public static final String VENTA_FECHA_VENTA_NOT_NULL = "La fecha de venta no puede ser nula";
-    public static final String VENTA_TOTAL_POSITIVE = "El monto total de la venta no puede ser negativo";
     public static final String VENTA_PRODUCTOS_NOT_NULL = "La venta debe tener al menos 1 producto";
     public static final String VENTA_CLIENTE_NOT_NULL = "La venta debe tener 1 cliente";
     public static final String PRODUCTO_SIN_STOCK = "No hay stock disponible para el producto: %s - %s - %s";
     public static final String NO_SALES_FOR_THAT_DATE = "No hay ventas para la fecha '%s'";
     public static final String NO_SALES_YET = "No hay ventas realizadas";
     public static final String PRODUCTO_YA_INGRESADO = "Producto ya ingresado en sistema";
-    public static final String RESTRICCION_FK = "No se puede realizar la operación ya que viola una restricción";
+    public static final String EDIT_PRODUCTO_RESTRICT = "No se puede modificar un producto que esté asociado a una venta";
+    public static final String DELETE_CLIENTE_RESTRICCION_FK = "No se puede eliminar un cliente que tenga asociada una venta";
+    public static final String DELETE_PRODUCTO_RESTRICCION_FK = "No se puede eliminar un producto que esté asociado a una venta";
 }

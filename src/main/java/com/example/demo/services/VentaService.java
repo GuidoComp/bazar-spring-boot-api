@@ -8,6 +8,7 @@ import com.example.demo.dtos.responseDTOs.ventaDTOs.MontoYCantidadTotalDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.exceptions.NoStockException;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
 import com.example.demo.repositories.IVentaRepository;
@@ -51,7 +52,17 @@ public class VentaService implements IVentaService {
     }
 
     private void agregarCliente(Long idCliente, Venta venta) throws ResourceNotFoundException {
-        venta.agregarCliente(clienteService.getClienteById(idCliente));
+        Cliente nuevoCliente = clienteService.getClienteById(idCliente);
+        Cliente clienteAnterior = venta.getCliente();
+
+        if (clienteAnterior != null) {
+            clienteAnterior.borrarVenta(venta);
+            clienteService.save(clienteAnterior);
+        }
+        nuevoCliente.agregarVenta(venta);
+        clienteService.save(nuevoCliente);
+
+        venta.agregarCliente(nuevoCliente);
     }
 
     private void agregarProductos(List<Long> idsProductos, Venta venta) throws ResourceNotFoundException, NoStockException{

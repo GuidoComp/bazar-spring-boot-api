@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class UpdateVentaDTO {
     private LocalDate fechaVenta;
-
     private List<Long> idsProductos;
     private Long idCliente;
 }

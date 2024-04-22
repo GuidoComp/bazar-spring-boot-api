@@ -17,4 +17,6 @@ public interface IClienteService {
     ClienteResponseDTO updateCliente(Long id, UpdateClienteDTO updateClienteDTO);
 
     Cliente getClienteById(Long idCliente);
+
+    void save(Cliente clienteAnterior);
 }

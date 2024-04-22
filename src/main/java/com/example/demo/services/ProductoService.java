@@ -51,7 +51,7 @@ public class ProductoService implements IProductoService {
     public ProductoResponseDTO deleteProducto(Long id) {
         Producto producto = this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
         if (!producto.getVentas().isEmpty()) {
-            throw new RestrictException(ErrorMsgs.RESTRICCION_FK);
+            throw new RestrictException(ErrorMsgs.DELETE_PRODUCTO_RESTRICCION_FK);
         }
         this.productoRepository.delete(producto);
         return modelMapper.mapProductoToDTO(producto);
@@ -60,6 +60,10 @@ public class ProductoService implements IProductoService {
     @Override
     public ProductoResponseDTO updateProducto(Long id, UpdateProductoDTO updateProductoDTO) {
         Producto p = this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
+
+        if (p.getVentas() != null) {
+            throw new RestrictException(ErrorMsgs.EDIT_PRODUCTO_RESTRICT);
+        }
 
         if (updateProductoDTO.getNombre() != null) {
             p.setNombre(updateProductoDTO.getNombre());

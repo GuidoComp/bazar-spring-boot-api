@@ -39,8 +39,8 @@ public class ClienteService implements IClienteService {
     @Override
     public ClienteResponseDTO deleteCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
-        if (cliente.getVentas() != null) {
-            throw new RestrictException(ErrorMsgs.RESTRICCION_FK);
+        if (!cliente.getVentas().isEmpty()) {
+            throw new RestrictException(ErrorMsgs.DELETE_CLIENTE_RESTRICCION_FK);
         }
         clienteRepository.delete(cliente);
 
@@ -67,5 +67,10 @@ public class ClienteService implements IClienteService {
     @Override
     public Cliente getClienteById(Long idCliente) throws ResourceNotFoundException {
         return clienteRepository.findById(idCliente).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, idCliente)));
+    }
+
+    @Override
+    public void save(Cliente clienteAnterior) {
+        this.clienteRepository.save(clienteAnterior);
     }
 }
