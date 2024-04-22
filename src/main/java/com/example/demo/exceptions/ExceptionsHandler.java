@@ -76,7 +76,17 @@ public class ExceptionsHandler  {
         ErrorDTO errorDTO = new ErrorDTO();
 
         errorDTO.setCode(HttpStatus.BAD_REQUEST);
-        errorDTO.setMessage(ErrorMsgs.PRODUCTO_YA_INGRESADO);
+        errorDTO.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorDTO, errorDTO.getCode());
+    }
+
+    @ExceptionHandler({RestrictException.class})
+    public ResponseEntity<ErrorDTO> handleRestrictException(RestrictException ex) {
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        errorDTO.setCode(HttpStatus.CONFLICT);
+        errorDTO.setMessage(ex.getMessage());
 
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }

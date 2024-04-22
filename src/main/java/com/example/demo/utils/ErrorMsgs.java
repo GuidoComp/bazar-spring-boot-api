@@ -30,4 +30,5 @@ public class ErrorMsgs {
     public static final String NO_SALES_FOR_THAT_DATE = "No hay ventas para la fecha '%s'";
     public static final String NO_SALES_YET = "No hay ventas realizadas";
     public static final String PRODUCTO_YA_INGRESADO = "Producto ya ingresado en sistema";
+    public static final String RESTRICCION_FK = "No se puede realizar la operación ya que viola una restricción";
 }

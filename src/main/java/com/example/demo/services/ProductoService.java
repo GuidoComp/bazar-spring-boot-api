@@ -4,6 +4,7 @@ import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Producto;
 import com.example.demo.repositories.IProductoRepository;
 import com.example.demo.utils.AppVariables;
@@ -45,6 +46,9 @@ public class ProductoService implements IProductoService {
     @Override
     public ProductoResponseDTO deleteProducto(Long id) {
         Producto producto = this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
+        if (!producto.getVentas().isEmpty()) {
+            throw new RestrictException(ErrorMsgs.RESTRICCION_FK);
+        }
         this.productoRepository.delete(producto);
         return modelMapper.mapProductoToDTO(producto);
     }
