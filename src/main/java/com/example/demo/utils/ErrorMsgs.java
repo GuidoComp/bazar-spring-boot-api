@@ -32,4 +32,6 @@ public class ErrorMsgs {
     public static final String EDIT_PRODUCTO_RESTRICT = "No se puede modificar un producto que esté asociado a una venta";
     public static final String DELETE_CLIENTE_RESTRICCION_FK = "No se puede eliminar un cliente que tenga asociada una venta";
     public static final String DELETE_PRODUCTO_RESTRICCION_FK = "No se puede eliminar un producto que esté asociado a una venta";
+    public static final String CREAR_CLIENTE_DNI_FK = "Cliente ya ingresado en sistema";
+    public static final String UPDATE_PRODUCTOS_NO_PERMITIDO = "No se puede actualizar una lista de productos idéntica";
 }
