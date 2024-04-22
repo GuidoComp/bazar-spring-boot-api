@@ -13,6 +13,7 @@ import com.example.demo.utils.GenericModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClienteService implements IClienteService {
@@ -32,12 +33,33 @@ public class ClienteService implements IClienteService {
     @Override
     public ClienteResponseDTO addCliente(AddClienteDTO addClienteDTO) {
         Cliente cliente = modelMapper.mapAddClienteDTOToCliente(addClienteDTO);
+        checkDniCliente(cliente.getDni());
         Cliente clienteDb = this.clienteRepository.save(cliente);
         return modelMapper.mapClienteToDTO(clienteDb);
     }
 
+    private void checkDniCliente(String dniCliente) {
+        if (this.getClienteByDni(dniCliente).isPresent()) {
+            throw new RestrictException(ErrorMsgs.CREAR_CLIENTE_DNI_FK);
+        }
+    }
+
     @Override
-    public ClienteResponseDTO deleteCliente(Long id) {
+    public Optional<Cliente> getClienteByDni(String dni) {
+        List<Cliente> clientesDb = this.clienteRepository.findAll();
+        Optional<Cliente> cliente = Optional.empty();
+        int index = 0;
+        while(cliente.isEmpty() && index < clientesDb.size()) {
+            if (clientesDb.get(index).getDni().equals(dni)) {
+                cliente = Optional.ofNullable(clientesDb.get(index));
+            }
+            index++;
+        }
+        return cliente;
+    }
+
+    @Override
+    public ClienteResponseDTO deleteCliente(Long id) throws ResourceNotFoundException {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
         if (!cliente.getVentas().isEmpty()) {
             throw new RestrictException(ErrorMsgs.DELETE_CLIENTE_RESTRICCION_FK);
@@ -58,6 +80,7 @@ public class ClienteService implements IClienteService {
             cliente.setApellido(updateClienteDTO.getApellido());
         }
         if (updateClienteDTO.getDni() != null) {
+            this.checkDniCliente(updateClienteDTO.getDni());
             cliente.setDni(updateClienteDTO.getDni());
         }
         this.clienteRepository.save(cliente);

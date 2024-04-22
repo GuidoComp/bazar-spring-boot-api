@@ -21,6 +21,7 @@ public class Cliente {
     private Long clienteId;
     private String nombre;
     private String apellido;
+    @Column(unique = true)
     private String dni;
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Venta> ventas = new ArrayList<>();
