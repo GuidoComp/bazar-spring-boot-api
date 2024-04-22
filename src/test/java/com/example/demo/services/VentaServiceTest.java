@@ -72,7 +72,7 @@ class VentaServiceTest {
 
         Long idCliente = 1L;
 
-        AddVentaDTO addVentaDTO = new AddVentaDTO(LocalDate.now(), 15263.0, idsProductos, idCliente);
+        AddVentaDTO addVentaDTO = new AddVentaDTO(LocalDate.now(), idsProductos, idCliente);
 
         //preparamos el cliente y los productos que se van a agregar a la venta
         List<Producto> productos = new ArrayList<>();
@@ -91,7 +91,6 @@ class VentaServiceTest {
         //Then
         assertNotNull(ventaAgregadaDTO);
         assertEquals(addVentaDTO.getFechaVenta(), ventaAgregadaDTO.getFechaVenta());
-        assertEquals(addVentaDTO.getTotal(), ventaAgregadaDTO.getTotal());
         assertEquals(addVentaDTO.getIdsProductos().get(0), ventaAgregadaDTO.getProductos().get(0).getProductoId());
         assertEquals(addVentaDTO.getIdCliente(), ventaAgregadaDTO.getCliente().getClienteId());
         verify(ventaRepository).save(any(Venta.class));
@@ -133,7 +132,7 @@ class VentaServiceTest {
 
         VentaResponseDTO ventaDTO = null;
 
-        ventaDTO = ventaService.updateVenta(1L, new UpdateVentaDTO(LocalDate.now(), 1500.0));
+        ventaDTO = ventaService.updateVenta(1L, new UpdateVentaDTO(LocalDate.now(), new ArrayList<>(), 1L));
 
         assertNotNull(ventaDTO);
         assertEquals(venta.getVentaId(), ventaDTO.getVentaId());

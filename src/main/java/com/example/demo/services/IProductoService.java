@@ -17,4 +17,6 @@ public interface IProductoService {
     ProductoResponseDTO updateProducto(Long id, UpdateProductoDTO updateProductoDTO);
 
     List<Producto> getProductosByIds(List<Long> idsProductos);
+
+    List<ProductoResponseDTO> getProductosConStockBajo();
 }

@@ -2,6 +2,7 @@ package com.example.demo.exceptions;
 
 import com.example.demo.dtos.errorDTOs.ErrorDTO;
 import com.example.demo.dtos.errorDTOs.ValidationError;
+import com.example.demo.utils.ErrorMsgs;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +67,16 @@ public class ExceptionsHandler  {
         errorDTO.setCode(HttpStatus.NOT_FOUND);
         errors.add(ex.getMessage());
         errorDTO.setErrors(errors);
+
+        return new ResponseEntity<>(errorDTO, errorDTO.getCode());
+    }
+
+    @ExceptionHandler({SQLIntegrityConstraintViolationException.class})
+    public ResponseEntity<ErrorDTO> handleUniqueProduct(SQLIntegrityConstraintViolationException ex) {
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        errorDTO.setCode(HttpStatus.BAD_REQUEST);
+        errorDTO.setMessage(ErrorMsgs.PRODUCTO_YA_INGRESADO);
 
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }

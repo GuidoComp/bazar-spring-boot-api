@@ -48,4 +48,9 @@ public class ProductosController {
         ProductoResponseDTO productoResponseDTO = productoService.updateProducto(id, updateProductoDTO);
         return ResponseEntity.ok(productoResponseDTO);
     }
+
+    @GetMapping("/falta_stock")
+    public ResponseEntity<?> getProductosConStockBajo() {
+        return ResponseEntity.ok(productoService.getProductosConStockBajo());
+    }
 }

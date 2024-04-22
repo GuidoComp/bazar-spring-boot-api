@@ -12,6 +12,7 @@ import com.example.demo.models.Venta;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GenericModelMapper {
@@ -81,7 +82,6 @@ public class GenericModelMapper {
 
         if (addVentaDTO != null) {
             venta.setFechaVenta(addVentaDTO.getFechaVenta());
-            venta.setTotal(addVentaDTO.getTotal());
 //            venta = this.modelMapper.map(addVentaDTO, Venta.class);
         }
         return venta;
@@ -104,5 +104,13 @@ public class GenericModelMapper {
             ventaResponseDTO.setCliente(modelMapper.map(ventaDb.getCliente(), ClienteResponseDTO.class));
         }
         return ventaDb.getProductos() == null && ventaDb.getCliente() == null ? modelMapper.map(ventaDb, VentaResponseDTO.class) : ventaResponseDTO;
+    }
+
+    public List<ProductoResponseDTO> mapProductosToDTO(List<Producto> productos) {
+        List<ProductoResponseDTO> productosDTO = new LinkedList<>();
+        for (Producto p: productos) {
+            productosDTO.add(this.modelMapper.map(p, ProductoResponseDTO.class));
+        }
+        return productosDTO;
     }
 }

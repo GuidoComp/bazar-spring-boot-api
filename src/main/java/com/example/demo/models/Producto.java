@@ -11,6 +11,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "Productos")
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"nombre", "marca"})
+        }
+)
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +29,14 @@ public class Producto {
     private Double costo;
     @Column(name = "cantidad_disponible", nullable = false)
     private Double cantidadDisponible;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "productos_ventas",
-            joinColumns = @JoinColumn(name = "producto_id"),
-            inverseJoinColumns = @JoinColumn(name = "venta_id"))
+    @ManyToMany(mappedBy = "productos", cascade = CascadeType.ALL)
     private List<Venta> ventas = new ArrayList<>();
 
     public void agregarVenta(Venta venta) {
         this.ventas.add(venta);
+    }
+
+    public void quitarVenta(Venta venta) {
+        this.ventas.remove(venta);
     }
 }

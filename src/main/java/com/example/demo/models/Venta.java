@@ -25,13 +25,19 @@ public class Venta {
     @Column(name = "fecha_venta")
     private LocalDate fechaVenta;
     private Double total;
-    @ManyToMany(mappedBy = "ventas")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "productos_ventas",
+            joinColumns = @JoinColumn(name = "venta_id"),
+            inverseJoinColumns = @JoinColumn(name = "producto_id"))
     private List<Producto> productos = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "cliente_id", referencedColumnName = "cliente_id")
     private Cliente cliente;
 
     public void agregarCliente(Cliente clienteById) {
+        if (cliente != null) {
+            cliente.borrarVenta(this);
+        }
         this.cliente = clienteById;
         cliente.agregarVenta(this); //No es necesario, con setear un lado de la relación es suficiente, aunque mejor explicitarlo
     }
@@ -47,5 +53,14 @@ public class Venta {
         if (producto.getCantidadDisponible() == 0) {
             throw new NoStockException(String.format(ErrorMsgs.PRODUCTO_SIN_STOCK, producto.getProductoId(), producto.getNombre(), producto.getMarca()));
         }
+    }
+
+    public void borrarProductos() {
+        setTotal(0.0);
+        for(Producto p: productos) {
+            p.setCantidadDisponible(p.getCantidadDisponible() + 1);
+            p.quitarVenta(this);
+        }
+        productos.clear();
     }
 }

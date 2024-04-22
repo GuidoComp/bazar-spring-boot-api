@@ -1,10 +1,7 @@
 package com.example.demo.controllers;
 
-import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
-import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.UpdateVentaDTO;
-import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.services.IClienteService;
 import com.example.demo.services.IProductoService;
@@ -15,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -54,5 +52,20 @@ public class VentasController {
         VentaResponseDTO ventaResponseDTO = this.ventaService.updateVenta(id, requestVentaDTO);
         ResponseWithMessage<VentaResponseDTO> response = new ResponseWithMessage<>(ventaResponseDTO, "Venta editada exitosamente");
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/productos/{idVenta}") //hacer la validación del idVenta
+    public ResponseEntity<?> getProductosDeVenta(@PathVariable Long idVenta) {
+        return ResponseEntity.ok(this.ventaService.getProductosDTODeVenta(idVenta));
+    }
+
+    @GetMapping("/{fecha_venta}")
+    public ResponseEntity<?> getMontoYCantidadTotales(@PathVariable LocalDate fecha_venta) {
+        return ResponseEntity.ok(this.ventaService.getMontoYCantidadTotales(fecha_venta));
+    }
+
+    @GetMapping("/mayor_venta")
+    public ResponseEntity<?> getInfoMayorVenta() {
+        return ResponseEntity.ok(this.ventaService.getInfoMayorVenta());
     }
 }

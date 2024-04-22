@@ -32,4 +32,8 @@ public class Cliente {
         }
         this.ventas.add(venta);
     }
+
+    public void borrarVenta(Venta venta) {
+        this.ventas.remove(venta);
+    }
 }

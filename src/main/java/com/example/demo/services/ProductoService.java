@@ -6,6 +6,7 @@ import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.Producto;
 import com.example.demo.repositories.IProductoRepository;
+import com.example.demo.utils.AppVariables;
 import com.example.demo.utils.ErrorMsgs;
 import com.example.demo.utils.GenericModelMapper;
 import org.springframework.stereotype.Service;
@@ -75,5 +76,18 @@ public class ProductoService implements IProductoService {
             productos.add(this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id)));
         }
         return productos;
+    }
+
+    @Override
+    public List<ProductoResponseDTO> getProductosConStockBajo() {
+        List<Producto> productos = this.productoRepository.findAll();
+        List<ProductoResponseDTO> productosConStockBajo = new LinkedList<>();
+
+        for (Producto producto: productos) {
+            if (producto.getCantidadDisponible() < AppVariables.STOCK_BAJO) {
+                productosConStockBajo.add(this.modelMapper.mapProductoToDTO(producto));
+            }
+        }
+        return productosConStockBajo;
     }
 }
