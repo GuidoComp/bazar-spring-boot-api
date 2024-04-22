@@ -61,10 +61,6 @@ public class ProductoService implements IProductoService {
     public ProductoResponseDTO updateProducto(Long id, UpdateProductoDTO updateProductoDTO) {
         Producto p = this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
 
-        if (p.getVentas() != null) {
-            throw new RestrictException(ErrorMsgs.EDIT_PRODUCTO_RESTRICT);
-        }
-
         if (updateProductoDTO.getNombre() != null) {
             p.setNombre(updateProductoDTO.getNombre());
         }
