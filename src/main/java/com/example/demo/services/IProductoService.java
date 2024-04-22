@@ -19,4 +19,6 @@ public interface IProductoService {
     List<Producto> getProductosByIds(List<Long> idsProductos);
 
     List<ProductoResponseDTO> getProductosConStockBajo();
+
+    boolean productoExistente(Producto producto, String nombre, String marca);
 }

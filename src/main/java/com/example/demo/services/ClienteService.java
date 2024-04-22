@@ -4,6 +4,7 @@ import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.repositories.IClienteRepository;
@@ -38,6 +39,9 @@ public class ClienteService implements IClienteService {
     @Override
     public ClienteResponseDTO deleteCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
+        if (cliente.getVentas() != null) {
+            throw new RestrictException(ErrorMsgs.RESTRICCION_FK);
+        }
         clienteRepository.delete(cliente);
 
         return modelMapper.mapClienteToDTO(cliente);

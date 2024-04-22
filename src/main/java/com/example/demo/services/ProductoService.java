@@ -39,7 +39,11 @@ public class ProductoService implements IProductoService {
 
     @Override
     public ProductoResponseDTO addProducto(AddProductoDTO addProductoDTO) {
-        Producto p = this.productoRepository.save(modelMapper.mapDTOToProducto(addProductoDTO));
+        Producto producto = modelMapper.mapDTOToProducto(addProductoDTO);
+        if (this.productoExistente(producto, addProductoDTO.getNombre(), addProductoDTO.getMarca())) {
+            throw new RestrictException(ErrorMsgs.PRODUCTO_YA_INGRESADO);
+        }
+        Producto p = this.productoRepository.save(producto);
         return modelMapper.mapProductoToDTO(p);
     }
 
@@ -93,5 +97,19 @@ public class ProductoService implements IProductoService {
             }
         }
         return productosConStockBajo;
+    }
+
+    @Override
+    public boolean productoExistente(Producto producto, String nombre, String marca) {
+        List<Producto> productos = this.productoRepository.findAll();
+        boolean exists = false;
+        int index = 0;
+        while (!exists && index < productos.size()) {
+            if (productos.get(index).getNombre().equals(nombre) && productos.get(index).getMarca().equals(marca)) {
+                exists = true;
+            }
+            index++;
+        }
+        return exists;
     }
 }
