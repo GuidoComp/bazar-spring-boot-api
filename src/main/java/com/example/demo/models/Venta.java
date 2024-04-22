@@ -25,7 +25,7 @@ public class Venta {
     @Column(name = "fecha_venta")
     private LocalDate fechaVenta;
     private Double total;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinTable(name = "productos_ventas",
             joinColumns = @JoinColumn(name = "venta_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id"))
