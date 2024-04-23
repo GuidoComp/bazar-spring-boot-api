@@ -9,13 +9,4 @@ public class RestrictException extends RuntimeException {
         super(message);
         this.code = HttpStatus.NOT_FOUND;
     }
-
-    public RestrictException() {
-        super();
-    }
-
-    public RestrictException(String message, HttpStatus code) {
-        super(message);
-        this.code = code;
-    }
 }

@@ -27,10 +27,6 @@ public class Cliente {
     private List<Venta> ventas = new ArrayList<>();
 
     public void agregarVenta(Venta venta) {
-        //no es necesario quizas
-        if (this.ventas == null) {
-            this.ventas = new ArrayList<>();
-        }
         this.ventas.add(venta);
     }
 

@@ -6,7 +6,6 @@ import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Cliente;
-import com.example.demo.models.Producto;
 import com.example.demo.repositories.IClienteRepository;
 import com.example.demo.utils.ErrorMsgs;
 import com.example.demo.utils.GenericModelMapper;
@@ -34,7 +33,7 @@ public class ClienteService implements IClienteService {
     public ClienteResponseDTO addCliente(AddClienteDTO addClienteDTO) {
         Cliente cliente = modelMapper.mapAddClienteDTOToCliente(addClienteDTO);
         checkDniCliente(cliente.getDni());
-        Cliente clienteDb = this.clienteRepository.save(cliente);
+        Cliente clienteDb = clienteRepository.save(cliente);
         return modelMapper.mapClienteToDTO(clienteDb);
     }
 
@@ -59,7 +58,7 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
-    public ClienteResponseDTO deleteCliente(Long id) throws ResourceNotFoundException {
+    public ClienteResponseDTO deleteCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
         if (!cliente.getVentas().isEmpty()) {
             throw new RestrictException(ErrorMsgs.DELETE_CLIENTE_RESTRICCION_FK);
@@ -73,22 +72,25 @@ public class ClienteService implements IClienteService {
     public ClienteResponseDTO updateCliente(Long id, UpdateClienteDTO updateClienteDTO) {
         Cliente cliente = this.clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
 
-        if (updateClienteDTO.getNombre() != null) {
-            cliente.setNombre(updateClienteDTO.getNombre());
+        String nombre = updateClienteDTO.getNombre();
+        if (nombre != null) {
+            cliente.setNombre(nombre);
         }
-        if (updateClienteDTO.getApellido() != null) {
-            cliente.setApellido(updateClienteDTO.getApellido());
+        String apellido = updateClienteDTO.getApellido();
+        if (apellido != null) {
+            cliente.setApellido(apellido);
         }
-        if (updateClienteDTO.getDni() != null) {
-            this.checkDniCliente(updateClienteDTO.getDni());
-            cliente.setDni(updateClienteDTO.getDni());
+        String dni = updateClienteDTO.getDni();
+        if (dni != null) {
+            this.checkDniCliente(dni);
+            cliente.setDni(dni);
         }
         this.clienteRepository.save(cliente);
         return modelMapper.mapClienteToDTO(cliente);
     }
 
     @Override
-    public Cliente getClienteById(Long idCliente) throws ResourceNotFoundException {
+    public Cliente getClienteById(Long idCliente) {
         return clienteRepository.findById(idCliente).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, idCliente)));
     }
 

@@ -38,17 +38,10 @@ public class Venta {
         this.cliente = clienteById;
     }
 
-    public void agregarProducto(Producto producto) throws NoStockException {
-        this.checkStock(producto);
+    public void agregarProducto(Producto producto) {
         producto.setCantidadDisponible(producto.getCantidadDisponible() - 1);
         this.productos.add(producto);
         producto.agregarVenta(this);
-    }
-
-    private void checkStock(Producto producto) {
-        if (producto.getCantidadDisponible() == 0) {
-            throw new NoStockException(String.format(ErrorMsgs.PRODUCTO_SIN_STOCK, producto.getProductoId(), producto.getNombre(), producto.getMarca()));
-        }
     }
 
     public void borrarProductos() {

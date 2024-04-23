@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
+import com.example.demo.exceptions.NoStockException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Producto;
@@ -43,17 +44,17 @@ public class ProductoService implements IProductoService {
         if (this.productoExistente(producto, addProductoDTO.getNombre(), addProductoDTO.getMarca())) {
             throw new RestrictException(ErrorMsgs.PRODUCTO_YA_INGRESADO);
         }
-        Producto p = this.productoRepository.save(producto);
+        Producto p = productoRepository.save(producto);
         return modelMapper.mapProductoToDTO(p);
     }
 
     @Override
     public ProductoResponseDTO deleteProducto(Long id) {
-        Producto producto = this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
         if (!producto.getVentas().isEmpty()) {
             throw new RestrictException(ErrorMsgs.DELETE_PRODUCTO_RESTRICCION_FK);
         }
-        this.productoRepository.delete(producto);
+        productoRepository.delete(producto);
         return modelMapper.mapProductoToDTO(producto);
     }
 
@@ -61,39 +62,43 @@ public class ProductoService implements IProductoService {
     public ProductoResponseDTO updateProducto(Long id, UpdateProductoDTO updateProductoDTO) {
         Producto p = this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id));
 
-        if (updateProductoDTO.getNombre() != null) {
-            p.setNombre(updateProductoDTO.getNombre());
+        String nombre = updateProductoDTO.getNombre();
+        if (nombre != null) {
+            p.setNombre(nombre);
         }
-        if (updateProductoDTO.getMarca() != null) {
-            p.setMarca(updateProductoDTO.getMarca());
+        String marca = updateProductoDTO.getMarca();
+        if (marca != null) {
+            p.setMarca(marca);
         }
-        if (updateProductoDTO.getCosto() != null) {
-            p.setCosto(updateProductoDTO.getCosto());
+        Double costo = updateProductoDTO.getCosto();
+        if (costo != null) {
+            p.setCosto(costo);
         }
-        if (updateProductoDTO.getCantidadDisponible() != null) {
-            p.setCantidadDisponible(updateProductoDTO.getCantidadDisponible());
+        Double cantidadDisponible = updateProductoDTO.getCantidadDisponible();
+        if (cantidadDisponible != null) {
+            p.setCantidadDisponible(cantidadDisponible);
         }
-        this.productoRepository.save(p);
+        productoRepository.save(p);
         return modelMapper.mapProductoToDTO(p);
     }
 
     @Override
-    public List<Producto> getProductosByIds(List<Long> idsProductos) throws ResourceNotFoundException {
+    public List<Producto> getProductosByIds(List<Long> idsProductos) {
         List<Producto> productos = new ArrayList<>();
         for(Long id : idsProductos){
-            productos.add(this.productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id)));
+            productos.add(productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id)));
         }
         return productos;
     }
 
     @Override
     public List<ProductoResponseDTO> getProductosConStockBajo() {
-        List<Producto> productos = this.productoRepository.findAll();
+        List<Producto> productos = productoRepository.findAll();
         List<ProductoResponseDTO> productosConStockBajo = new LinkedList<>();
 
         for (Producto producto: productos) {
             if (producto.getCantidadDisponible() < AppVariables.STOCK_BAJO) {
-                productosConStockBajo.add(this.modelMapper.mapProductoToDTO(producto));
+                productosConStockBajo.add(modelMapper.mapProductoToDTO(producto));
             }
         }
         return productosConStockBajo;
@@ -111,5 +116,12 @@ public class ProductoService implements IProductoService {
             index++;
         }
         return exists;
+    }
+
+    @Override
+    public void checkStock(Producto producto) {
+        if (producto.getCantidadDisponible() == 0) {
+            throw new NoStockException(String.format(ErrorMsgs.PRODUCTO_SIN_STOCK, producto.getProductoId(), producto.getNombre(), producto.getMarca()));
+        }
     }
 }

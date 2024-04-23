@@ -9,13 +9,4 @@ public class NoStockException extends RuntimeException {
         super(message);
         this.code = HttpStatus.NOT_FOUND;
     }
-
-    public NoStockException() {
-        super();
-    }
-
-    public NoStockException(String message, HttpStatus code) {
-        super(message);
-        this.code = code;
-    }
 }

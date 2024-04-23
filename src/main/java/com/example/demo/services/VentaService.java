@@ -37,22 +37,23 @@ public class VentaService implements IVentaService {
 
     @Override
     public List<VentaResponseDTO> getVentas() {
-        return modelMapper.mapVentasToDTO(ventaRepository.findAll());
+        List<Venta> ventas = ventaRepository.findAll();
+        return modelMapper.mapVentasToDTO(ventas);
     }
 
     @Override
     @Transactional
-    public VentaResponseDTO addVenta(AddVentaDTO addVentaDTO) throws NoStockException, ResourceNotFoundException {
+    public VentaResponseDTO addVenta(AddVentaDTO addVentaDTO) {
         Venta venta = modelMapper.mapAddVentaDTOToVenta(addVentaDTO);
 
-        this.agregarCliente(addVentaDTO.getIdCliente(), venta);
-        this.agregarProductos(addVentaDTO.getIdsProductos(), venta);
+        agregarCliente(addVentaDTO.getIdCliente(), venta);
+        agregarProductos(addVentaDTO.getIdsProductos(), venta);
 
-        Venta ventaDb = this.ventaRepository.save(venta);
+        Venta ventaDb = ventaRepository.save(venta);
         return modelMapper.mapVentaToDTO(ventaDb);
     }
 
-    private void agregarCliente(Long idCliente, Venta venta) throws ResourceNotFoundException {
+    private void agregarCliente(Long idCliente, Venta venta) {
         Cliente nuevoCliente = clienteService.getClienteById(idCliente);
         Cliente clienteAnterior = venta.getCliente();
 
@@ -66,10 +67,11 @@ public class VentaService implements IVentaService {
         venta.agregarCliente(nuevoCliente);
     }
 
-    private void agregarProductos(List<Long> idsProductos, Venta venta) throws ResourceNotFoundException, NoStockException{
+    private void agregarProductos(List<Long> idsProductos, Venta venta) {
         List<Producto> productos = productoService.getProductosByIds(idsProductos);
         double monto = 0;
         for(Producto p: productos) {
+            productoService.checkStock(p);
             venta.agregarProducto(p);
             monto += p.getCosto();
         }
@@ -88,30 +90,32 @@ public class VentaService implements IVentaService {
 
     @Override
     public VentaResponseDTO updateVenta(Long id, UpdateVentaDTO updateVentaDTO) {
-        Venta venta = this.ventaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.VENTA_NOT_FOUND, id)));
+        Venta venta = ventaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.VENTA_NOT_FOUND, id)));
 
-        if (updateVentaDTO.getFechaVenta() != null) {
-            venta.setFechaVenta(updateVentaDTO.getFechaVenta());
+        LocalDate fechaVenta = updateVentaDTO.getFechaVenta();
+        if (fechaVenta != null) {
+            venta.setFechaVenta(fechaVenta);
         }
-        if (updateVentaDTO.getIdsProductos() != null) {
-            this.actualizarProductos(updateVentaDTO.getIdsProductos(), venta);
+        List<Long> idsProductos = updateVentaDTO.getIdsProductos();
+        if (idsProductos != null) {
+            actualizarProductos(idsProductos, venta);
         }
-        if (updateVentaDTO.getIdCliente() != null) {
-            this.agregarCliente(updateVentaDTO.getIdCliente(), venta);
+        Long idCliente = updateVentaDTO.getIdCliente();
+        if (idCliente != null) {
+            agregarCliente(idCliente, venta);
         }
-
-        this.ventaRepository.save(venta);
+        ventaRepository.save(venta);
         return modelMapper.mapVentaToDTO(venta);
     }
 
-    private void actualizarProductos(List<Long> idsProductosNuevos, Venta venta) throws ResourceNotFoundException {
+    private void actualizarProductos(List<Long> idsProductosNuevos, Venta venta) {
         checkProductos(idsProductosNuevos, venta);
         venta.borrarProductos();
-        this.agregarProductos(idsProductosNuevos, venta);
+        agregarProductos(idsProductosNuevos, venta);
     }
 
     private void checkProductos(List<Long> idsProductos, Venta venta) {
-        List<Long> idsProductosVentaDb = this.getIdsDeProductos(venta);
+        List<Long> idsProductosVentaDb = getIdsDeProductos(venta);
         if (idsProductosVentaDb.equals(idsProductos)) {
             throw new EqualProductsIds(ErrorMsgs.UPDATE_PRODUCTOS_NO_PERMITIDO);
         }
@@ -126,21 +130,21 @@ public class VentaService implements IVentaService {
     }
 
     @Override
-    public List<ProductoResponseDTO> getProductosDTODeVenta(Long idVenta) throws ResourceNotFoundException {
+    public List<ProductoResponseDTO> getProductosDTODeVenta(Long idVenta) {
         List<ProductoResponseDTO> productosDTO;
-        Venta venta = this.getVentaById(idVenta);
-        productosDTO = this.modelMapper.mapProductosToDTO(venta.getProductos());
+        Venta venta = getVentaById(idVenta);
+        productosDTO = modelMapper.mapProductosToDTO(venta.getProductos());
         return productosDTO;
     }
 
     @Override
-    public Venta getVentaById(Long idVenta) throws ResourceNotFoundException {
-        return this.ventaRepository.findById(idVenta).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.VENTA_NOT_FOUND, idVenta)));
+    public Venta getVentaById(Long idVenta)  {
+        return ventaRepository.findById(idVenta).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.VENTA_NOT_FOUND, idVenta)));
     }
 
     @Override
-    public MontoYCantidadTotalDTO getMontoYCantidadTotales(LocalDate fechaVenta) throws ResourceNotFoundException {
-        List<Venta> ventasOfDate = this.getVentasByDate(fechaVenta);
+    public MontoYCantidadTotalDTO getMontoYCantidadTotales(LocalDate fechaVenta) {
+        List<Venta> ventasOfDate = getVentasByDate(fechaVenta);
         double monto = 0;
         for (Venta ventas: ventasOfDate) {
             monto += ventas.getTotal();
@@ -149,8 +153,8 @@ public class VentaService implements IVentaService {
     }
 
     @Override
-    public List<Venta> getVentasByDate(LocalDate fecha) throws ResourceNotFoundException {
-        List<Venta> ventas = this.ventaRepository.findAll();
+    public List<Venta> getVentasByDate(LocalDate fecha) {
+        List<Venta> ventas = ventaRepository.findAll();
         List<Venta> ventasOfDate = new LinkedList<>();
 
         for (Venta venta: ventas) {
@@ -163,9 +167,9 @@ public class VentaService implements IVentaService {
     }
 
     @Override
-    public InfoMayorVenta getInfoMayorVenta() throws ResourceNotFoundException {
+    public InfoMayorVenta getInfoMayorVenta() {
         double montoMayor = 0;
-        List<Venta> ventas = this.ventaRepository.findAll();
+        List<Venta> ventas = ventaRepository.findAll();
         if (ventas.isEmpty()) throw new ResourceNotFoundException(ErrorMsgs.NO_SALES_YET);
         Venta ventaMayor = new Venta();
 
