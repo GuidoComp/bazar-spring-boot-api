@@ -20,7 +20,7 @@ public interface IProductoService {
 
     List<ProductoResponseDTO> getProductosConStockBajo();
 
-    boolean productoExistente(Producto producto, String nombre, String marca);
+    boolean productoExistente(String nombre, String marca);
 
     void checkStock(Producto p);
 }

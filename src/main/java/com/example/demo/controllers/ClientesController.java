@@ -10,6 +10,7 @@ import com.example.demo.utils.ResponseWithMessage;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public class ClientesController {
         return ResponseEntity.ok(clienteService.getClientes());
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addCliente(@Valid @RequestBody AddClienteDTO clienteRequestDTO) {
         ClienteResponseDTO clienteResponseDTO = this.clienteService.addCliente(clienteRequestDTO);
@@ -40,6 +43,8 @@ public class ClientesController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteCliente(@PathVariable Long id) {
         ClienteResponseDTO cliDTO = this.clienteService.deleteCliente(id);
@@ -47,6 +52,8 @@ public class ClientesController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/edit/{id}")
     public ResponseEntity<?> editCliente(@PathVariable Long id, @Valid @RequestBody UpdateClienteDTO requestClientDTO) {
         ClienteResponseDTO clienteResponseDTO = this.clienteService.updateCliente(id, requestClientDTO);
