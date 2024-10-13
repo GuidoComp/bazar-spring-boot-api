@@ -1,11 +1,8 @@
 package com.example.demo.models;
 
-import com.example.demo.exceptions.NoStockException;
-import com.example.demo.utils.ErrorMsgs;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -14,7 +11,6 @@ import java.util.List;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "Ventas")
 public class Venta {
@@ -29,10 +25,22 @@ public class Venta {
     @JoinTable(name = "productos_ventas",
             joinColumns = @JoinColumn(name = "venta_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id"))
-    private List<Producto> productos = new ArrayList<>();
+    private List<Producto> productos;
     @ManyToOne
     @JoinColumn(name = "cliente_id", referencedColumnName = "cliente_id")
     private Cliente cliente;
+
+    public Venta() {
+        this.productos = new ArrayList<>();
+    }
+
+    public Venta(Cliente cliente, Double total, LocalDate fechaVenta, Long ventaId) {
+        this();
+        this.cliente = cliente;
+        this.total = total;
+        this.fechaVenta = fechaVenta;
+        this.ventaId = ventaId;
+    }
 
     public void agregarCliente(Cliente clienteById) {
         this.cliente = clienteById;

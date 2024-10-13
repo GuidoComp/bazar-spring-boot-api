@@ -3,9 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
-import com.example.demo.services.IClienteService;
-import com.example.demo.services.IProductoService;
-import com.example.demo.services.IVentaService;
+import com.example.demo.services.*;
 import com.example.demo.utils.GenericModelMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -13,9 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = ClientesController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ClientesControllerTest {
 
     @Autowired
@@ -49,7 +50,14 @@ class ClientesControllerTest {
     @Mock
     private GenericModelMapper modelMapper;
 
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private AuthenticationService authenticationService;
+
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void getClientes() throws Exception {
         List<ClienteResponseDTO> clientesDTO = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -66,6 +74,7 @@ class ClientesControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void getVoidClients() {
         List<ClienteResponseDTO> clientesDTO = new ArrayList<>();
         when(clienteService.getClientes()).thenReturn(clientesDTO);
@@ -75,6 +84,7 @@ class ClientesControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void addCliente() throws Exception {
         AddClienteDTO clienteRequestDTO = new AddClienteDTO("Roberto", "Canessa", "26598441");
         ObjectMapper objectMapper = new ObjectMapper(); //biblioteca ObjectMapper de Jackson para procesar JSON, convierte un objecto en un json.
@@ -96,6 +106,7 @@ class ClientesControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void deleteCliente() throws Exception {
         Long id = 1L;
         ClienteResponseDTO cliDTO = new ClienteResponseDTO(1L, "Roberto", "Canessa", "26598441");
@@ -112,6 +123,7 @@ class ClientesControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void editCliente() throws Exception {
         UpdateClienteDTO cliReqDTO = new UpdateClienteDTO("Marcelo", "Canessa", "26598441");
         ObjectMapper objectMapper = new ObjectMapper();

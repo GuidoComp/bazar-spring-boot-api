@@ -58,9 +58,14 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    public void deleteAllClientes() {
+        this.clienteRepository.deleteAll();
+    }
+
+    @Override
     public ClienteResponseDTO deleteCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
-        if (!cliente.getVentas().isEmpty()) {
+        if (cliente.getVentas() != null) {
             throw new RestrictException(ErrorMsgs.DELETE_CLIENTE_RESTRICCION_FK);
         }
         clienteRepository.delete(cliente);

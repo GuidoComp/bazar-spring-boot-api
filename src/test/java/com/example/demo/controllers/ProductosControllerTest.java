@@ -4,9 +4,7 @@ import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
-import com.example.demo.services.IClienteService;
-import com.example.demo.services.IProductoService;
-import com.example.demo.services.IVentaService;
+import com.example.demo.services.*;
 import com.example.demo.utils.ErrorMsgs;
 import com.example.demo.utils.GenericModelMapper;
 import org.hamcrest.Matchers;
@@ -16,9 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,18 +26,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 //mock de la capa de ProductosControllers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = ProductosController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ProductosControllerTest {
 
     @Autowired
@@ -55,7 +53,14 @@ class ProductosControllerTest {
     @Mock
     private GenericModelMapper modelMapper;
 
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private AuthenticationService authenticationService;
+
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void deberia_devolver_productos() throws Exception {
         List<ProductoResponseDTO> mockProductos = Arrays.asList(
                 new ProductoResponseDTO(1L, "nombre 1", "marca 1", 100.0, 10.0),
@@ -73,6 +78,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Si no hay Productos, debería devolver una lista vacía de productos")
     void getProductsEmptyList() throws Exception {
         when(productoService.getProductos()).thenReturn(new ArrayList<>());
@@ -86,6 +92,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Debería agregar un producto y devolver un ProductoDTO")
     void shouldAddProduct() throws Exception {
         AddProductoDTO addProductoDTO = new AddProductoDTO("nombre 1", "marca 1", 100.0, 10.0);
@@ -103,7 +110,7 @@ class ProductosControllerTest {
                         .content(jsonBody))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.productoId").value(1L))
                 .andExpect(jsonPath("$.nombre").value("nombre 1"))
                 .andExpect(jsonPath("$.marca").value("marca 1"))
                 .andExpect(jsonPath("$.costo").value(100.0))
@@ -115,6 +122,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Debería fallar cuando los datos del producto son inválidos")
     void shouldFailWhenProductDataIsInvalid() throws Exception {
         String jsonBody = "{\"nombre\":null,\"marca\":\"\",\"costo\":-100.0,\"cantidadDisponible\":-10.0}";
@@ -136,6 +144,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Debería eliminar un producto")
     void shouldDeleteAProduct() throws Exception {
         Long id = 7L;
@@ -150,6 +159,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Debería devolver Not Found cuando el producto no existe")
     void shouldReturnNotFoundWhenProductDoesNotExist() throws Exception {
         Long productId = 1L;
@@ -165,6 +175,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Debería actualizar un producto")
     void shouldUpdateProduct() throws Exception {
         Long id = 7L;
@@ -183,7 +194,7 @@ class ProductosControllerTest {
                         .content(jsonBody))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.productoId").value(1L))
                 .andExpect(jsonPath("$.nombre").value("nombre 1"))
                 .andExpect(jsonPath("$.marca").value("marca 1"))
                 .andExpect(jsonPath("$.costo").value(100.0))
@@ -196,6 +207,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Debería fallar cuando los datos del producto son inválidos")
     void shouldFailWhenProductDataIsInvalidInUpdate() throws Exception {
         String jsonBody = "{\"nombre\":\"a\", \"marca\":\"chispita\", \"costo\":-100.0, \"cantidadDisponible\":-10.0}";
@@ -217,6 +229,7 @@ class ProductosControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("Al actualizar, deberia respetar las validaciones no nulleables")
     void shouldFailWhenProductDataIsInvalidInUpdatee() throws Exception {
         String jsonBody = "{\"nombre\":null,\"marca\":\"\",\"costo\":-100.0,\"cantidadDisponible\":-10.0}";

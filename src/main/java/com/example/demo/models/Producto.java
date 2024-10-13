@@ -8,9 +8,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity(name = "Productos")
+@AllArgsConstructor
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"nombre", "marca"})
@@ -30,13 +29,28 @@ public class Producto {
     @Column(name = "cantidad_disponible", nullable = false)
     private Double cantidadDisponible;
     @ManyToMany(mappedBy = "productos", cascade = CascadeType.ALL)
-    private List<Venta> ventas = new ArrayList<>();
+    private List<Venta> ventas;
+
+    public Producto() {
+        this.ventas = new ArrayList<>();
+    }
+
+    public Producto(Long productoId, String nombre, String marca, Double costo, Double cantidadDisponible) {
+        this();
+        this.productoId = productoId;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.costo = costo;
+        this.cantidadDisponible = cantidadDisponible;
+    }
 
     public void agregarVenta(Venta venta) {
         this.ventas.add(venta);
     }
 
     public void quitarVenta(Venta venta) {
-        this.ventas.remove(venta);
+        if (this.ventas != null) {
+            this.ventas.remove(venta);
+        }
     }
 }

@@ -22,4 +22,6 @@ public interface IClienteService {
     void save(Cliente clienteAnterior);
 
     Optional<Cliente> getClienteByDni(String dni);
+
+    void deleteAllClientes();
 }

@@ -6,16 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc //Spring configura MockMVC sin necesidad de crear Mocks
+@AutoConfigureMockMvc(addFilters = false) //Spring configura MockMVC sin necesidad de crear Mocks
 class ProductosControllerIntegrationTest {
 
     @Autowired
@@ -30,6 +29,7 @@ class ProductosControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void addProducto() throws Exception {
         String jsonBody = "{\"nombre\": \"nombre 1\", \"marca\": \"marca 1\", \"costo\": 100.0, \"cantidadDisponible\": 10.0}";
         mockMvc.perform(post("/productos/add")
@@ -44,6 +44,7 @@ class ProductosControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void addProductoFail() throws Exception {
         String jsonBody = "{\"nombre\": \"\", \"marca\": null, \"costo\": -100.0, \"cantidadDisponible\": 10.0}";
         mockMvc.perform(post("/productos/add")
@@ -61,13 +62,15 @@ class ProductosControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void deleteProduct() throws Exception {
-        mockMvc.perform(delete("/productos/delete/9"))
+        mockMvc.perform(delete("/productos/delete/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Producto eliminado correctamente"));
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void deleteProductFail() throws Exception {
         mockMvc.perform(delete("/productos/delete/100"))
                 .andExpect(status().isNotFound())
@@ -75,9 +78,10 @@ class ProductosControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void updateProduct() throws Exception {
         String jsonBody = "{\"nombre\": \"nombre 1\", \"marca\": \"marca 1\", \"costo\": 100.0, \"cantidadDisponible\": 10.0}";
-        mockMvc.perform(put("/productos/edit/9")
+        mockMvc.perform(put("/productos/edit/1")
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -89,10 +93,11 @@ class ProductosControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void updateProductFailNotFound() throws Exception {
         String jsonBody = "{\"nombre\": \"nombre 1\", \"marca\": \"marca 1\", \"costo\": 100.0, \"cantidadDisponible\": 10.0}";
         //String jsonBody = "{\"nombre\": \"\", \"marca\": null, \"costo\": -100.0, \"cantidadDisponible\": 10.0}";
-        Long id = 1L;
+        Long id = 10L;
         mockMvc.perform(put("/productos/edit/{id}", id)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -102,9 +107,10 @@ class ProductosControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
     void shouldUpdateOnlyValidAttributes() throws Exception {
         String jsonBody = "{\"marca\": \"Ayudín\", \"costo\": 100.0}";
-        Long id = 9L;
+        Long id = 1L;
         mockMvc.perform(put("/productos/edit/{id}", id)
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON))
