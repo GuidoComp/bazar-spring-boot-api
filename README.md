@@ -13,6 +13,7 @@ Este proyecto es una API diseñada para manejar las operaciones de un bazar que 
 - **MySQL**: Sistema de gestión de base de datos.
 - **Spring Boot Validations**: Para validar los datos de entrada en la API.
 - **Mockito y JUnit**: Utilizados para realizar pruebas unitarias y de integración.
+- **Docker**: Para empaquetar la app y sus dependencias, asegurando que se pueda ejecutar de manera consistente en diferentes entornos.
 - **Swagger**: Para documentar y visualizar todos los endpoints de la API.
 - **ModelMapper**: Utilidad para mapear objetos.
 - **Lombok**: Biblioteca para reducir el código repetitivo de Java, como getters, setters, etc.
@@ -24,9 +25,9 @@ Para configurar y ejecutar este proyecto localmente, sigue estos pasos:
 2. Crea una base de datos en MySQL.
 3. Configura la cadena de conexión, usuario y contraseña de tu base de datos en `application.properties` utilizando variables de entorno para mayor seguridad:
    ```properties
-   spring.datasource.url=${DATABASE_URL}
-   spring.datasource.username=${DATABASE_USER}
-   spring.datasource.password=${DATABASE_PASSWORD}
+   spring.datasource.url=${DB_URL}
+   spring.datasource.username=${DB_USERNAME}
+   spring.datasource.password=${DB_PASSWORD}
 4. Instala las dependencias del proyecto con:
    mvn install
 5. Ejecuta la aplicación utilizando:
