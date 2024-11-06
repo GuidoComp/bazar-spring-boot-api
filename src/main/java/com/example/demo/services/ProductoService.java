@@ -84,11 +84,7 @@ public class ProductoService implements IProductoService {
 
     @Override
     public List<Producto> getProductosByIds(List<Long> idsProductos) {
-        List<Producto> productos = new ArrayList<>();
-        for(Long id : idsProductos){
-            productos.add(productoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + id)));
-        }
-        return productos;
+        return productoRepository.findAllById(idsProductos);
     }
 
     @Override
