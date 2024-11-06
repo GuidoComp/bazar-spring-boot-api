@@ -28,7 +28,7 @@ public class Producto {
     private Double costo;
     @Column(name = "cantidad_disponible", nullable = false)
     private Double cantidadDisponible;
-    @ManyToMany(mappedBy = "productos", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "productos")
     private List<Venta> ventas;
 
     public Producto() {
