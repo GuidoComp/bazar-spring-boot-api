@@ -5,6 +5,7 @@ import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
 import com.example.demo.repositories.IClienteRepository;
+import com.example.demo.utils.GenericModelMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -28,9 +29,6 @@ class ClienteServiceIntegrationTest {
 
     @Autowired
     private ClienteService clienteService;
-
-    @Autowired
-    private ModelMapper mapper;
 
     @Nested
     @Tag("IntegrationTest")
