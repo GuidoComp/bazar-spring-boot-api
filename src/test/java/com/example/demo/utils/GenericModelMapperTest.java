@@ -7,8 +7,7 @@ import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,8 +16,22 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenericModelMapperTest {
+    GenericModelMapper modelMapper;
 
-    private static GenericModelMapper modelMapper;
+    @BeforeEach
+    void setUpAll() {
+//        modelMapper = GenericModelMapper.getModelMapper();
+    }
+
+    @Nested
+    @Tag("MapperTest")
+    @DisplayName("Probando mapper")
+    class MapperTest {
+        @Test
+        void getAllClientesTest() {
+
+        }
+    }
 
     @Test
     public void deberiaMappearUnProductoEnProductoDTO() {
@@ -124,12 +137,5 @@ class GenericModelMapperTest {
         assertEquals(cliente.getNombre(), clienteResponseDTO.getNombre());
         assertEquals(cliente.getApellido(), clienteResponseDTO.getApellido());
         assertEquals(cliente.getDni(), clienteResponseDTO.getDni());
-    }
-
-
-
-    @BeforeAll
-    static void setUpAll() {
-        modelMapper = GenericModelMapper.getModelMapper();
     }
 }

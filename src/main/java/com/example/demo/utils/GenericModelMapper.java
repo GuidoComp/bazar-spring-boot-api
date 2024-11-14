@@ -15,20 +15,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GenericModelMapper {
+public class GenericModelMapper implements IModelMapper {
     private final ModelMapper modelMapper;
-    private static GenericModelMapper instance;
+//    private static GenericModelMapper instance;
 
-    private GenericModelMapper() {
+    public GenericModelMapper() {
         this.modelMapper = new ModelMapper();
     }
 
-    public static GenericModelMapper getModelMapper() {
-        if (instance == null) {
-            instance = new GenericModelMapper();
-        }
-        return instance;
-    }
+//    public static GenericModelMapper getModelMapper() {
+//        if (instance == null) {
+//            instance = new GenericModelMapper();
+//        }
+//        return instance;
+//    }
 
     public ProductoResponseDTO mapProductoToDTO(Producto producto) {
         ProductoResponseDTO productoResponseDTO = null;
