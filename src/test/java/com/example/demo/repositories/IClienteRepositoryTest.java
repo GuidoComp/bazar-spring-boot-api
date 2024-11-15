@@ -1,81 +1,104 @@
 package com.example.demo.repositories;
 
+import com.example.demo.Datos;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.Cliente;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest //las transacciones se revierten al final de cada test
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
 class IClienteRepositoryTest {
 
     @Autowired
-    private IClienteRepository iClienteRepository;
+    private IClienteRepository repository;
 
     @Test
     void shouldFindAllAndReturnNoOne() {
-        List<Cliente> clientes = iClienteRepository.findAll();
+        List<Cliente> clientes = repository.findAll();
 
         assertNotNull(clientes);
         assertEquals(0, clientes.size());
     }
 
     @Test
-    void shouldAddAClientAndReturnIt() {
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Test");
-        Cliente savedCliente = iClienteRepository.save(cliente);
+//    @Transactional(propagation = Propagation.NOT_SUPPORTED) // activar para commitear la transaccion en bd
+    void shouldAddAClient() {
+        Cliente savedCliente = repository.save(Datos.CLIENTE_SIN_VENTAS);
 
-        Cliente clienteEnDb = iClienteRepository.findById(savedCliente.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id :: " + savedCliente.getClienteId()));
+        Cliente clienteEnDb = repository.findById(savedCliente.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id: " + savedCliente.getClienteId()));
 
         assertNotNull(clienteEnDb);
-        assertEquals(1, iClienteRepository.findAll().size());
-        assertEquals("Test", clienteEnDb.getNombre());
+        assertEquals(1, repository.findAll().size());
+        assertEquals("Juan", clienteEnDb.getNombre());
+        assertDoesNotThrow(() -> repository.findById(savedCliente.getClienteId()));
     }
 
     @Test
-    void shouldThrowAnExceptionWhenTryingToFindAClientThatDoesNotExist() {
+    @DisplayName("Arrojar ResourceNotFoundException al buscar un cliente inexistente por id")
+    void findByIdClienteInexistente() {
         assertThrows(ResourceNotFoundException.class, () -> {
-            iClienteRepository.findById(1L)
-                    .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id :: " + 1L));
+            repository.findById(1L)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id: " + 1L));
         });
     }
 
     @Test
     void shouldDeleteAClient() {
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Test");
-        Cliente savedCliente = iClienteRepository.save(cliente);
+        Cliente savedCliente = repository.save(Datos.CLIENTE_SIN_VENTAS);
 
-        iClienteRepository.deleteById(savedCliente.getClienteId());
+        repository.deleteById(savedCliente.getClienteId());
 
-        assertEquals(0, iClienteRepository.findAll().size());
+        assertEquals(0, repository.findAll().size());
     }
 
     @Test
     void shouldUpdateAClient() {
-        Cliente cliente = new Cliente();
-        cliente.setNombre("Test");
-        Cliente savedCliente = iClienteRepository.save(cliente);
+        Cliente savedCliente = repository.save(Datos.CLIENTE_SIN_VENTAS);
 
-        Cliente clienteEnDb = iClienteRepository.findById(savedCliente.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id :: " + savedCliente.getClienteId()));
+        Cliente clienteEnDb = repository.findById(savedCliente.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id: " + savedCliente.getClienteId()));
 
         clienteEnDb.setNombre("Test2");
-        iClienteRepository.save(clienteEnDb);
+        repository.save(clienteEnDb);
 
-        Cliente clienteUpdated = iClienteRepository.findById(savedCliente.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id :: " + savedCliente.getClienteId()));
+        Cliente clienteUpdated = repository.findById(savedCliente.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente not found for this id: " + savedCliente.getClienteId()));
 
         assertEquals("Test2", clienteUpdated.getNombre());
+    }
+
+    @Test
+    void findClienteByDni() {
+        repository.saveAll(Datos.CLIENTES_SIN_VENTAS);
+
+        Optional<Cliente> clienteDb = repository.findClienteByDni("36158155");
+
+        assertNotNull(clienteDb);
+        assertEquals("Juan", clienteDb.get().getNombre());
+    }
+
+    @Test
+    void findClienteInexistenteByDni() {
+        repository.saveAll(Datos.CLIENTES_SIN_VENTAS);
+
+        Optional<Cliente> clienteDb = repository.findClienteByDni("23222222");
+
+        assertTrue(clienteDb.isEmpty());
     }
 }

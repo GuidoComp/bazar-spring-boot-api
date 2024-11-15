@@ -19,8 +19,6 @@ public interface IClienteService {
 
     Cliente getClienteById(Long idCliente);
 
-    void save(Cliente clienteAnterior);
-
     Optional<Cliente> getClienteByDni(String dni);
 
     void deleteAllClientes();

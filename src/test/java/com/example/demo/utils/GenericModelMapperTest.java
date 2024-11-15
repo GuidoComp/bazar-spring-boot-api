@@ -1,7 +1,6 @@
 package com.example.demo.utils;
 
-import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
-import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
+import com.example.demo.Datos;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
@@ -11,13 +10,14 @@ import com.example.demo.models.Venta;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class GenericModelMapperTest {
     @Autowired
     private GenericModelMapper mapper;

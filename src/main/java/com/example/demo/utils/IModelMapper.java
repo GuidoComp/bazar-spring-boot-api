@@ -1,6 +1,7 @@
 package com.example.demo.utils;
 
 import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
+import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;

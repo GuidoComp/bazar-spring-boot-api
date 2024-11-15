@@ -50,17 +50,7 @@ public class ClienteService implements IClienteService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Cliente> getClienteByDni(String dni) {
-        List<Cliente> clientesDb = this.clienteRepository.findAll();
-        Optional<Cliente> cliente = Optional.empty();
-        int index = 0;
-        while(cliente.isEmpty() && index < clientesDb.size()) {
-            if (clientesDb.get(index).getDni().equals(dni)) {
-                cliente = Optional.ofNullable(clientesDb.get(index));
-            }
-            index++;
-        }
-        return cliente;
-//        return clienteRepository.findClienteByDni(dni);
+        return clienteRepository.findClienteByDni(dni);
     }
 
     @Override
@@ -70,7 +60,7 @@ public class ClienteService implements IClienteService {
 
     @Override
     public ClienteResponseDTO deleteCliente(Long id) {
-        Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
+        Cliente cliente = this.getClienteById(id);
         if (cliente.getVentas() != null) {
             throw new RestrictException(ErrorMsgs.DELETE_CLIENTE_RESTRICCION_FK);
         }
@@ -81,32 +71,24 @@ public class ClienteService implements IClienteService {
 
     @Override
     public ClienteResponseDTO updateCliente(Long id, UpdateClienteDTO updateClienteDTO) {
-        Cliente cliente = this.clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, id)));
+        Cliente clienteEnDb = this.getClienteById(id);
 
-        String nombre = updateClienteDTO.getNombre();
-        if (nombre != null) {
-            cliente.setNombre(nombre);
+        if (updateClienteDTO.getNombre() != null) {
+            clienteEnDb.setNombre(updateClienteDTO.getNombre());
         }
-        String apellido = updateClienteDTO.getApellido();
-        if (apellido != null) {
-            cliente.setApellido(apellido);
+        if (updateClienteDTO.getApellido() != null) {
+            clienteEnDb.setApellido(updateClienteDTO.getApellido());
         }
-        String dni = updateClienteDTO.getDni();
-        if (dni != null) {
-            this.checkDniCliente(dni);
-            cliente.setDni(dni);
+        if (updateClienteDTO.getDni() != null) {
+            clienteEnDb.setDni(updateClienteDTO.getDni());
         }
-        this.clienteRepository.save(cliente);
-        return mapper.mapClienteToDTO(cliente);
+
+        clienteRepository.save(clienteEnDb);
+        return mapper.mapClienteToDTO(clienteEnDb);
     }
 
     @Override
     public Cliente getClienteById(Long idCliente) {
         return clienteRepository.findById(idCliente).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, idCliente)));
-    }
-
-    @Override
-    public void save(Cliente clienteAnterior) {
-        this.clienteRepository.save(clienteAnterior);
     }
 }

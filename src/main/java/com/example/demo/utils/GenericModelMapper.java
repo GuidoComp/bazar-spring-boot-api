@@ -1,6 +1,7 @@
 package com.example.demo.utils;
 
 import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
+import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
@@ -85,8 +86,8 @@ public class GenericModelMapper implements IModelMapper {
     @Override
     public List<ProductoResponseDTO> mapProductosToDTO(List<Producto> productos) {
         checkNull(productos);
-            return productos.stream()
-                    .map(producto -> mapper.map(producto, ProductoResponseDTO.class))
-                    .toList();
+        return productos.stream()
+                .map(producto -> mapper.map(producto, ProductoResponseDTO.class))
+                .toList();
     }
 }
