@@ -9,7 +9,6 @@ import com.example.demo.models.Cliente;
 import com.example.demo.repositories.IClienteRepository;
 import com.example.demo.utils.ErrorMsgs;
 import com.example.demo.utils.IModelMapper;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,11 +53,13 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    @Transactional
     public void deleteAllClientes() {
         this.clienteRepository.deleteAll();
     }
 
     @Override
+    @Transactional
     public ClienteResponseDTO deleteCliente(Long id) {
         Cliente cliente = this.getClienteById(id);
         if (cliente.getVentas() != null) {
@@ -70,6 +71,7 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    @Transactional
     public ClienteResponseDTO updateCliente(Long id, UpdateClienteDTO updateClienteDTO) {
         Cliente clienteEnDb = this.getClienteById(id);
 
@@ -88,7 +90,8 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Cliente getClienteById(Long idCliente) {
-        return clienteRepository.findById(idCliente).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, idCliente)));
+        return clienteRepository.findById(idCliente).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.CLIENTE_NOT_FOUND_ID, idCliente)));
     }
 }

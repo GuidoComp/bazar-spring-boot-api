@@ -3,7 +3,8 @@ package com.example.demo.utils;
 public class ErrorMsgs {
     public static final String PRODUCTO_NOT_FOUND = "Producto no encontrado";
     public static final String VENTA_NOT_FOUND = "Venta no encontrada con el id %s";
-    public static final String CLIENTE_NOT_FOUND = "Cliente no encontrado con el id %s";
+    public static final String CLIENTE_NOT_FOUND_ID = "Cliente no encontrado con el id %s";
+    public static final String CLIENTE_NOT_FOUND_DNI = "Cliente no encontrado con el dni %s";
     public static final String NOMBRE_PRODUCTO_REQUIRED = "El nombre del producto es requerido";
     public static final String NOMBRE_PRODUCTO_LENGTH = "El nombre del producto debe tener entre 3 y 200 caracteres";
     public static final String MARCA_LENGTH = "La marca del producto debe tener entre 3 y 200 caracteres";

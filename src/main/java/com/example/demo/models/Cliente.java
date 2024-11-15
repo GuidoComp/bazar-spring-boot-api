@@ -20,6 +20,7 @@ public class Cliente {
     @Column(unique = true)
     private String dni;
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
     private List<Venta> ventas;
 
     public Cliente() {

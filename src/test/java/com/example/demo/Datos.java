@@ -24,6 +24,17 @@ public class Datos {
     );
     public static final AddClienteDTO ADD_CLIENTE_DTO = new AddClienteDTO("Juan", "Perez", "36158155");
     public static final Cliente CLIENTE_SIN_VENTAS = new Cliente(1L, "Juan", "Perez", "36158155", null);
+    public static final List<Cliente> CLIENTES_CON_Y_SIN_VENTAS = List.of(
+            new Cliente(1L, "Marcelo", "Troncho", "36158188", List.of(
+                    new Venta(new Cliente(),
+                            156.2,
+                            LocalDate.now(),
+                            1L
+                    )
+            )),
+            new Cliente(2L, "Laura", "Perez", "36185926"),
+            new Cliente(3L, "Pedro", "Sable", "59623555")
+    );
     public static final Cliente CLIENTE_CON_VENTAS = new Cliente(1L, "Juan", "Perez", "36158155", new ArrayList<>(VENTAS));
     public static final AddVentaDTO ADD_VENTA_DTO = new AddVentaDTO(LocalDate.now(), List.of(1L, 2L), 1L);
     public static final List<Producto> PRODUCTOS_CON_Y_SIN_VENTAS = List.of(

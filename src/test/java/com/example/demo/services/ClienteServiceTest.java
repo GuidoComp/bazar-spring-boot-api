@@ -1,7 +1,6 @@
 package com.example.demo.services;
 
 import com.example.demo.Datos;
-import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
@@ -15,11 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -153,7 +149,7 @@ class ClienteServiceTest {
     void shouldThrowExceptionWhenDeleteClienteInexistente() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> clienteService.deleteCliente(1L), ErrorMsgs.CLIENTE_NOT_FOUND);
+        assertThrows(ResourceNotFoundException.class, () -> clienteService.deleteCliente(1L), ErrorMsgs.CLIENTE_NOT_FOUND_ID);
     }
 
     @Test

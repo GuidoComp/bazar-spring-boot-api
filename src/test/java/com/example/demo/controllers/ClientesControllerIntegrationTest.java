@@ -1,11 +1,8 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
-import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.services.IClienteService;
-import com.example.demo.services.IProductoService;
 import com.example.demo.utils.ErrorMsgs;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -91,7 +87,7 @@ public class ClientesControllerIntegrationTest {
     void deleteClientFail() throws Exception {
         mockMvc.perform(delete("/clientes/delete/100"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(String.format(ErrorMsgs.CLIENTE_NOT_FOUND, 100)));
+                .andExpect(jsonPath("$.message").value(String.format(ErrorMsgs.CLIENTE_NOT_FOUND_ID, 100)));
     }
 
 //    @Test
