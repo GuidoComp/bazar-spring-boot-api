@@ -100,28 +100,24 @@ class GenericModelMapperTest {
         @Test
         @DisplayName("AddCliente DTO a Cliente")
         void mapAddClienteDTOToCliente() {
-            // Arrange
-            AddClienteDTO addClienteDTO = new AddClienteDTO("Juan", "Perez", "36158155");
             // Act
-            Cliente cliente = mapper.mapAddClienteDTOToCliente(addClienteDTO);
+            Cliente cliente = mapper.mapAddClienteDTOToCliente(Datos.ADD_CLIENTE_DTO);
             // Assert
-            assertEquals(addClienteDTO.getNombre(), cliente.getNombre());
-            assertEquals(addClienteDTO.getApellido(), cliente.getApellido());
-            assertEquals(addClienteDTO.getDni(), cliente.getDni());
+            assertEquals(Datos.ADD_CLIENTE_DTO.getNombre(), cliente.getNombre());
+            assertEquals(Datos.ADD_CLIENTE_DTO.getApellido(), cliente.getApellido());
+            assertEquals(Datos.ADD_CLIENTE_DTO.getDni(), cliente.getDni());
         }
 
         @Test
         @DisplayName("Cliente a DTO")
         void mapClienteToDTO() {
-            // Arrange
-            Cliente cliente = new Cliente(1L, "Juan", "Perez", "36158155", null);
             // Act
-            ClienteResponseDTO clienteResponseDTO = mapper.mapClienteToDTO(cliente);
+            ClienteResponseDTO clienteResponseDTO = mapper.mapClienteToDTO(Datos.CLIENTE_SIN_VENTAS);
             // Assert
-            assertEquals(cliente.getClienteId(), clienteResponseDTO.getClienteId());
-            assertEquals(cliente.getNombre(), clienteResponseDTO.getNombre());
-            assertEquals(cliente.getApellido(), clienteResponseDTO.getApellido());
-            assertEquals(cliente.getDni(), clienteResponseDTO.getDni());
+            assertEquals(Datos.CLIENTE_SIN_VENTAS.getClienteId(), clienteResponseDTO.getClienteId());
+            assertEquals(Datos.CLIENTE_SIN_VENTAS.getNombre(), clienteResponseDTO.getNombre());
+            assertEquals(Datos.CLIENTE_SIN_VENTAS.getApellido(), clienteResponseDTO.getApellido());
+            assertEquals(Datos.CLIENTE_SIN_VENTAS.getDni(), clienteResponseDTO.getDni());
         }
 
         @Test
@@ -154,63 +150,44 @@ class GenericModelMapperTest {
         @Test
         @DisplayName("AddVentaDTO a Venta")
         void mapAddVentaDTOtoVenta() {
-            AddVentaDTO addVentaDTO = new AddVentaDTO(LocalDate.now(), List.of(1L, 2L), 1L);
-
-            Venta venta = mapper.mapAddVentaDTOToVenta(addVentaDTO);
+            Venta venta = mapper.mapAddVentaDTOToVenta(Datos.ADD_VENTA_DTO);
 
             assertNotNull(venta);
-            assertEquals(addVentaDTO.getFechaVenta(), venta.getFechaVenta());
-            assertEquals(addVentaDTO.getIdCliente(), venta.getCliente().getClienteId());
-            assertEquals(addVentaDTO.getIdsProductos().size(), venta.getProductos().size());
+            assertEquals(Datos.ADD_VENTA_DTO.getFechaVenta(), venta.getFechaVenta());
+            assertEquals(Datos.ADD_VENTA_DTO.getIdCliente(), venta.getCliente().getClienteId());
+            assertEquals(Datos.ADD_VENTA_DTO.getIdsProductos().size(), venta.getProductos().size());
         }
 
         @Test
         @DisplayName("Venta -con Productos y Cliente- a DTO")
         void mapVentaToDTO() {
-            List<Producto> productos = List.of(
-                    new Producto(1L, "Producto 1", "Marca 1", 100.0, 10.0, List.of(
-                            new Venta(1L, LocalDate.now(), 1000.0, null, null)
-                    )),
-                    new Producto(2L, "Producto 2", "Marca 2", 200.0, 20.0, null)
-            );
-            Venta venta = new Venta(1L, LocalDate.now(), 1000.0, productos, new Cliente(1L, "Juan", "Perez", "36158155"));
-
-            VentaResponseDTO ventaResponseDTO = mapper.mapVentaToDTO(venta);
+            VentaResponseDTO ventaResponseDTO = mapper.mapVentaToDTO(Datos.VENTA_CON_PRODUCTOS_Y_CLIENTE);
 
             assertNotNull(ventaResponseDTO);
-            assertEquals(venta.getVentaId(), ventaResponseDTO.getVentaId());
-            assertEquals(venta.getFechaVenta(), ventaResponseDTO.getFechaVenta());
-            assertEquals(venta.getTotal(), ventaResponseDTO.getTotal());
-            assertEquals(venta.getProductos().size(), ventaResponseDTO.getProductos().size());
-            assertEquals(venta.getCliente().getClienteId(), ventaResponseDTO.getCliente().getClienteId());
+            assertEquals(Datos.VENTA_CON_PRODUCTOS_Y_CLIENTE.getVentaId(), ventaResponseDTO.getVentaId());
+            assertEquals(Datos.VENTA_CON_PRODUCTOS_Y_CLIENTE.getFechaVenta(), ventaResponseDTO.getFechaVenta());
+            assertEquals(Datos.VENTA_CON_PRODUCTOS_Y_CLIENTE.getTotal(), ventaResponseDTO.getTotal());
+            assertEquals(Datos.VENTA_CON_PRODUCTOS_Y_CLIENTE.getProductos().size(), ventaResponseDTO.getProductos().size());
+            assertEquals(Datos.VENTA_CON_PRODUCTOS_Y_CLIENTE.getCliente().getClienteId(), ventaResponseDTO.getCliente().getClienteId());
         }
 
         @Test
         @DisplayName("Ventas a DTOs")
         void mapVentasToDto() {
-            List<Venta> ventas = List.of(
-                    new Venta(1L, LocalDate.now(), 1000.0, List.of(
-                            new Producto(1L, "Producto 1", "Marca 1", 100.0, 10.0, null)
-                    ), new Cliente(1L, "Juan", "Perez", "36158155")),
-                    new Venta(2L, LocalDate.now(), 2000.0, List.of(
-                            new Producto(2L, "Producto 2", "Marca 2", 200.0, 20.0, null)
-                    ), new Cliente(2L, "Pedro", "Gomez", "36158156"))
-            );
-
-            List<VentaResponseDTO> ventasDTO = mapper.mapVentasToDTO(ventas);
+            List<VentaResponseDTO> ventasDTO = mapper.mapVentasToDTO(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE);
 
             assertNotNull(ventasDTO);
-            assertEquals(ventas.size(), ventasDTO.size());
-            assertEquals(ventas.get(0).getVentaId(), ventasDTO.get(0).getVentaId());
-            assertEquals(ventas.get(0).getFechaVenta(), ventasDTO.get(0).getFechaVenta());
-            assertEquals(ventas.get(0).getTotal(), ventasDTO.get(0).getTotal());
-            assertEquals(ventas.get(0).getProductos().size(), ventasDTO.get(0).getProductos().size());
-            assertEquals(ventas.get(0).getCliente().getClienteId(), ventasDTO.get(0).getCliente().getClienteId());
-            assertEquals(ventas.get(1).getVentaId(), ventasDTO.get(1).getVentaId());
-            assertEquals(ventas.get(1).getFechaVenta(), ventasDTO.get(1).getFechaVenta());
-            assertEquals(ventas.get(1).getTotal(), ventasDTO.get(1).getTotal());
-            assertEquals(ventas.get(1).getProductos().size(), ventasDTO.get(1).getProductos().size());
-            assertEquals(ventas.get(1).getCliente().getClienteId(), ventasDTO.get(1).getCliente().getClienteId());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.size(), ventasDTO.size());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(0).getVentaId(), ventasDTO.get(0).getVentaId());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(0).getFechaVenta(), ventasDTO.get(0).getFechaVenta());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(0).getTotal(), ventasDTO.get(0).getTotal());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(0).getProductos().size(), ventasDTO.get(0).getProductos().size());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(0).getCliente().getClienteId(), ventasDTO.get(0).getCliente().getClienteId());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(1).getVentaId(), ventasDTO.get(1).getVentaId());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(1).getFechaVenta(), ventasDTO.get(1).getFechaVenta());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(1).getTotal(), ventasDTO.get(1).getTotal());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(1).getProductos().size(), ventasDTO.get(1).getProductos().size());
+            assertEquals(Datos.VENTAS_CON_PRODUCTOS_Y_CLIENTE.get(1).getCliente().getClienteId(), ventasDTO.get(1).getCliente().getClienteId());
         }
 
         @Test
