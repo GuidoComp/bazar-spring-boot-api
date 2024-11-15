@@ -15,6 +15,7 @@ import java.util.List;
                 @UniqueConstraint(columnNames = {"nombre", "marca"})
         }
 )
+@Builder
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

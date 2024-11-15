@@ -11,6 +11,7 @@ import com.example.demo.utils.ErrorMsgs;
 import com.example.demo.utils.IModelMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +27,13 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClienteResponseDTO> getClientes() {
         return mapper.mapClientesToDTO(clienteRepository.findAll());
     }
 
     @Override
+    @Transactional
     public ClienteResponseDTO addCliente(AddClienteDTO addClienteDTO) {
         Cliente cliente = mapper.mapAddClienteDTOToCliente(addClienteDTO);
         checkDniCliente(cliente.getDni());
@@ -45,6 +48,7 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Cliente> getClienteByDni(String dni) {
         List<Cliente> clientesDb = this.clienteRepository.findAll();
         Optional<Cliente> cliente = Optional.empty();
@@ -56,6 +60,7 @@ public class ClienteService implements IClienteService {
             index++;
         }
         return cliente;
+//        return clienteRepository.findClienteByDni(dni);
     }
 
     @Override

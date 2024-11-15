@@ -5,10 +5,7 @@ import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.repositories.IClienteRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,49 +27,82 @@ class ClienteServiceTest {
     @Mock
     IClienteRepository clienteRepository;
 
-    @Mock
-    ModelMapper mapper;
-
     @InjectMocks
-    private ClienteService clienteService;
+    ClienteService clienteService;
 
-    @Nested
-    @Tag("MapperTest")
-    @DisplayName("Probando mapper")
-    class MapperTest {
-        @Test
-        void getAllClientesTest() {
-            List<Cliente> clientes = List.of(
-                    new Cliente(1L, "Marcelo", "Troncho", "36158188"),
-                    new Cliente(2L, "Laura", "Perez", "36185926"),
-                    new Cliente(3L, "Pedro", "Sable", "59623555")
-            );
-            when(clienteRepository.findAll()).thenReturn(clientes);
-            when(mapper.map(any(Cliente.class), any(Class.class))).thenAnswer(inv -> {
-                Cliente cliente = inv.getArgument(0);
-                ClienteResponseDTO dto = new ClienteResponseDTO();
-                dto.setClienteId(cliente.getClienteId());
-                dto.setNombre(cliente.getNombre());
-                dto.setApellido(cliente.getApellido());
-                dto.setDni(cliente.getDni());
-                return dto;
-            });
+    List<Cliente> clientes;
 
-            List<ClienteResponseDTO> clientesDb = clienteService.getClientes();
-
-            assertNotNull(clientesDb);
-            System.out.println(clientesDb);
-            assertEquals(clientesDb.get(0).getClienteId(), clientes.get(0).getClienteId());
-            assertEquals(clientesDb.get(0).getNombre(), clientes.get(0).getNombre());
-            assertEquals(clientesDb.get(0).getApellido(), clientes.get(0).getApellido());
-            assertEquals(clientesDb.get(0).getDni(), clientes.get(0).getDni());
-
-            assertEquals(clientesDb.get(1).getClienteId(), clientes.get(1).getClienteId());
-            assertEquals(clientesDb.get(1).getNombre(), clientes.get(1).getNombre());
-            assertEquals(clientesDb.get(1).getApellido(), clientes.get(1).getApellido());
-            assertEquals(clientesDb.get(1).getDni(), clientes.get(1).getDni());
-        }
+    @BeforeEach
+    void setUp() {
+        List<Cliente> clientes = List.of(
+                new Cliente(1L, "Marcelo", "Troncho", "36158188"),
+                new Cliente(2L, "Laura", "Perez", "36185926"),
+                new Cliente(3L, "Pedro", "Sable", "59623555")
+        );
+        this.clientes = clientes;
     }
+
+    @Test
+    void getClienteByDni() {
+        String dni = "36158188";
+        when(clienteRepository.findAll()).thenReturn(clientes);
+
+        Optional<Cliente> clienteByDni = clienteService.getClienteByDni(dni);
+
+        assertNotNull(clienteByDni);
+        assertEquals("Marcelo", clienteByDni.orElseThrow().getNombre());
+        assertEquals("Troncho", clienteByDni.orElseThrow().getApellido());
+        assertEquals("36158188", clienteByDni.orElseThrow().getDni());
+    }
+
+    @Test
+    void getClientInexistenteByDni() {
+        String dni = "22333333";
+        when(clienteRepository.findAll()).thenReturn(clientes);
+
+        Optional<Cliente> clienteByDni = clienteService.getClienteByDni(dni);
+
+        assertNotNull(clienteByDni);
+        assertEquals(Optional.empty(), clienteByDni);
+    }
+
+    //    @Nested
+//    @Tag("MapperTest")
+//    @DisplayName("Probando mapper")
+//    class MapperTest {
+//        @Test
+//        void getAllClientesTest() {
+//            List<Cliente> clientes = List.of(
+//                    new Cliente(1L, "Marcelo", "Troncho", "36158188"),
+//                    new Cliente(2L, "Laura", "Perez", "36185926"),
+//                    new Cliente(3L, "Pedro", "Sable", "59623555")
+//            );
+//            when(clienteRepository.findAll()).thenReturn(clientes);
+//            when(mapper.map(any(Cliente.class), any(Class.class))).thenAnswer(inv -> {
+//                Cliente cliente = inv.getArgument(0);
+//                ClienteResponseDTO dto = new ClienteResponseDTO();
+//                dto.setClienteId(cliente.getClienteId());
+//                dto.setNombre(cliente.getNombre());
+//                dto.setApellido(cliente.getApellido());
+//                dto.setDni(cliente.getDni());
+//                return dto;
+//            });
+//
+//            List<ClienteResponseDTO> clientesDb = clienteService.getClientes();
+//
+//            assertNotNull(clientesDb);
+//            System.out.println(clientesDb);
+//            assertEquals(clientesDb.get(0).getClienteId(), clientes.get(0).getClienteId());
+//            assertEquals(clientesDb.get(0).getNombre(), clientes.get(0).getNombre());
+//            assertEquals(clientesDb.get(0).getApellido(), clientes.get(0).getApellido());
+//            assertEquals(clientesDb.get(0).getDni(), clientes.get(0).getDni());
+//
+//            assertEquals(clientesDb.get(1).getClienteId(), clientes.get(1).getClienteId());
+//            assertEquals(clientesDb.get(1).getNombre(), clientes.get(1).getNombre());
+//            assertEquals(clientesDb.get(1).getApellido(), clientes.get(1).getApellido());
+//            assertEquals(clientesDb.get(1).getDni(), clientes.get(1).getDni());
+//        }
+//    }
 
     @Test
     void getClientes() {

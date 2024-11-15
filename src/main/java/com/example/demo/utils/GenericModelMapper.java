@@ -26,24 +26,19 @@ public class GenericModelMapper implements IModelMapper {
 
     @Override
     public ProductoResponseDTO mapProductoToDTO(Producto producto) {
-        ProductoResponseDTO productoResponseDTO = null;
-        if (producto != null) {
-            productoResponseDTO = mapper.map(producto, ProductoResponseDTO.class);
-        }
-        return productoResponseDTO;
+        checkNull(producto);
+        return mapper.map(producto, ProductoResponseDTO.class);
     }
 
     @Override
     public Producto mapDTOToProducto(AddProductoDTO addProductoDTO) {
-        Producto p = null;
-        if (addProductoDTO != null) {
-            p = mapper.map(addProductoDTO, Producto.class);
-        }
-        return p;
+        checkNull(addProductoDTO);
+        return mapper.map(addProductoDTO, Producto.class);
     }
 
     @Override
     public List<ClienteResponseDTO> mapClientesToDTO(List<Cliente> allClients) {
+        checkNull(allClients);
         return allClients.stream()
                 .map(cli -> mapper.map(cli, ClienteResponseDTO.class))
                 .toList();
@@ -51,66 +46,47 @@ public class GenericModelMapper implements IModelMapper {
 
     @Override
     public Cliente mapAddClienteDTOToCliente(AddClienteDTO addClienteDTO) {
-        Cliente cliente = null;
-
-        if (addClienteDTO != null) {
-            cliente = mapper.map(addClienteDTO, Cliente.class);
-        }
-        return cliente;
+        checkNull(addClienteDTO);
+        return mapper.map(addClienteDTO, Cliente.class);
     }
 
     @Override
     public ClienteResponseDTO mapClienteToDTO(Cliente cliente) {
+        checkNull(cliente);
         return mapper.map(cliente, ClienteResponseDTO.class);
+    }
+
+    private static <T> void checkNull(T object) {
+        if (object == null) {
+            throw new IllegalArgumentException(String.format(ErrorMsgs.PARAMETRO_NULO));
+        }
     }
 
     @Override
     public List<VentaResponseDTO> mapVentasToDTO(List<Venta> allVentas) {
-        List<VentaResponseDTO> ventasDTO = new ArrayList<>();
-
-        for (Venta venta : allVentas) {
-            ventasDTO.add(mapper.map(venta, VentaResponseDTO.class));
-        }
-        return ventasDTO;
+        checkNull(allVentas);
+        return allVentas.stream()
+                .map(venta -> mapper.map(venta, VentaResponseDTO.class))
+                .toList();
     }
 
     @Override
     public Venta mapAddVentaDTOToVenta(AddVentaDTO addVentaDTO) {
-        Venta venta = new Venta();
-
-        if (addVentaDTO != null) {
-            venta.setFechaVenta(addVentaDTO.getFechaVenta());
-//            venta = this.modelMapper.map(addVentaDTO, Venta.class);
-        }
-        return venta;
+        checkNull(addVentaDTO);
+        return mapper.map(addVentaDTO, Venta.class);
     }
 
     @Override
     public VentaResponseDTO mapVentaToDTO(Venta ventaDb) {
-        List<ProductoResponseDTO> productosVenta = new ArrayList<>();
-        if (ventaDb.getProductos() != null) {
-            for (Producto producto : ventaDb.getProductos()) {
-                productosVenta.add(mapper.map(producto, ProductoResponseDTO.class));
-            }
-        }
-
-        VentaResponseDTO ventaResponseDTO = new VentaResponseDTO();
-        ventaResponseDTO.setVentaId(ventaDb.getVentaId());
-        ventaResponseDTO.setFechaVenta(ventaDb.getFechaVenta());
-        ventaResponseDTO.setTotal(ventaDb.getTotal());
-        ventaResponseDTO.setProductos(productosVenta);
-        if (ventaDb.getCliente() != null) {
-            ventaResponseDTO.setCliente(mapper.map(ventaDb.getCliente(), ClienteResponseDTO.class));
-        }
-        return ventaDb.getProductos() == null && ventaDb.getCliente() == null ? mapper.map(ventaDb, VentaResponseDTO.class) : ventaResponseDTO;
+        checkNull(ventaDb);
+        return mapper.map(ventaDb, VentaResponseDTO.class);
     }
 
     @Override
     public List<ProductoResponseDTO> mapProductosToDTO(List<Producto> productos) {
-        List<ProductoResponseDTO> productosDTO = new LinkedList<>();
-        for (Producto p: productos) {
-            productosDTO.add(this.mapper.map(p, ProductoResponseDTO.class));
-        }
-        return productosDTO;
+        checkNull(productos);
+            return productos.stream()
+                    .map(producto -> mapper.map(producto, ProductoResponseDTO.class))
+                    .toList();
     }
 }

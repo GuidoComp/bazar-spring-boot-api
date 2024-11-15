@@ -1,18 +1,15 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @Entity(name = "Clientes")
+@Data
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

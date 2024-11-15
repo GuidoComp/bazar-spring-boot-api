@@ -19,7 +19,7 @@ import java.util.List;
 @RestControllerAdvice
 public class ExceptionsHandler  {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<ValidationError> validationErrors = new ArrayList<>();
         ErrorDTO errors = new ErrorDTO();
@@ -35,7 +35,7 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ResourceNotFoundException.class})
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDTO> handleResourceNotFoundException(ResourceNotFoundException ex) {
 
         ErrorDTO errorDTO = new ErrorDTO();
@@ -48,7 +48,7 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorDTO> handleValidationExceptions(HttpRequestMethodNotSupportedException ex) {
         ErrorDTO errorDTO = new ErrorDTO();
         List<String> errors = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
 
-    @ExceptionHandler({NoStockException.class})
+    @ExceptionHandler(NoStockException.class)
     public ResponseEntity<ErrorDTO> handleNoStockException(NoStockException ex) {
         ErrorDTO errorDTO = new ErrorDTO();
         List<String> errors = new ArrayList<>();
@@ -72,7 +72,7 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
 
-    @ExceptionHandler({SQLIntegrityConstraintViolationException.class})
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<ErrorDTO> handleUniqueProduct(SQLIntegrityConstraintViolationException ex) {
         ErrorDTO errorDTO = new ErrorDTO();
 
@@ -82,7 +82,7 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
 
-    @ExceptionHandler({RestrictException.class})
+    @ExceptionHandler(RestrictException.class)
     public ResponseEntity<ErrorDTO> handleRestrictException(RestrictException ex) {
         ErrorDTO errorDTO = new ErrorDTO();
 
@@ -92,7 +92,7 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
 
-    @ExceptionHandler({HttpMessageNotReadableException.class})
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorDTO> handleNotReadableException(HttpMessageNotReadableException hmnre) {
         ErrorDTO errorDTO = new ErrorDTO();
 
@@ -102,12 +102,22 @@ public class ExceptionsHandler  {
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
 
-    @ExceptionHandler({EqualProductsIds.class})
+    @ExceptionHandler(EqualProductsIds.class)
     public ResponseEntity<ErrorDTO> handleEqualProductsIds(EqualProductsIds epi) {
         ErrorDTO errorDTO = new ErrorDTO();
 
         errorDTO.setCode(HttpStatus.NOT_ACCEPTABLE);
         errorDTO.setMessage(epi.getMessage());
+
+        return new ResponseEntity<>(errorDTO, errorDTO.getCode());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDTO> handleEqualProductsIds(IllegalArgumentException iae) {
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        errorDTO.setCode(HttpStatus.NOT_ACCEPTABLE);
+        errorDTO.setMessage(iae.getMessage());
 
         return new ResponseEntity<>(errorDTO, errorDTO.getCode());
     }
