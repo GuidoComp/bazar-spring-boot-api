@@ -6,8 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Entity(name = "Productos")
 @AllArgsConstructor
 @Table(
@@ -30,6 +29,7 @@ public class Producto {
     @Column(name = "cantidad_disponible", nullable = false)
     private Double cantidadDisponible;
     @ManyToMany(mappedBy = "productos")
+    @EqualsAndHashCode.Exclude
     private List<Venta> ventas;
 
     public Producto() {
