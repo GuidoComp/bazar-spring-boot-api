@@ -19,6 +19,7 @@ import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -99,16 +100,8 @@ public class ProductoService implements IProductoService {
     @Override
     @Transactional(readOnly = true)
     public boolean productoExistente(String nombre, String marca) {
-        List<Producto> productos = this.productoRepository.findAll();
-        boolean exists = false;
-        int index = 0;
-        while (!exists && index < productos.size()) {
-            if (productos.get(index).getNombre().equals(nombre) && productos.get(index).getMarca().equals(marca)) {
-                exists = true;
-            }
-            index++;
-        }
-        return exists;
+        Optional<Producto> producto = productoRepository.findByNombreAndMarca(nombre, marca);
+        return producto.isPresent();
     }
 
     @Override

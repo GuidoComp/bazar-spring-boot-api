@@ -4,6 +4,7 @@ import com.example.demo.Datos;
 import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
+import com.example.demo.exceptions.NoStockException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Producto;
@@ -98,7 +99,7 @@ class ProductoServiceTest {
             Producto producto = Datos.crearProducto1();
 
             when(mapper.mapDTOToProducto(any(AddProductoDTO.class))).thenReturn(producto);
-            when(productoRepository.findAll()).thenReturn(Datos.crearProductos());
+            when(productoRepository.findByNombreAndMarca(any(), any())).thenReturn(Optional.of(producto));
 
             //When
             productoService.addProducto(addProductoDTO);
@@ -261,5 +262,32 @@ class ProductoServiceTest {
         var productos = productoService.getProductosConStockBajo();
 
         assertEquals(2, productos.size());
+    }
+
+    @Test
+    void getProductosConStockBajoEmpty() {
+        when(productoRepository.findByCantidadDisponibleLessThan(anyInt())).thenReturn(new ArrayList<>());
+
+        var productos = productoService.getProductosConStockBajo();
+        assertTrue(productos.isEmpty());
+    }
+
+    @Test
+    void findProductoByNombreYMarca() {
+        when(productoRepository.findByNombreAndMarca(anyString(), anyString())).thenReturn(Optional.of(Datos.crearProducto1()));
+
+        var producto = productoService.productoExistente("Procesador", "Intel Core i5 14600KF");
+
+        assertTrue(producto);
+    }
+
+    @Test
+    void checkStockNoLanzaExcepcionSiTieneCantidadDisponible() {
+        assertDoesNotThrow(() -> productoService.checkStock(Datos.crearProducto1()));
+    }
+
+    @Test
+    void checkStockLanzaExcepcionSinCantidadDisponible() {
+        assertThrows(NoStockException.class, () -> productoService.checkStock(new Producto(1L, "Producto 1", "Marca 1", 100.0, 0.0, null)));
     }
 }
