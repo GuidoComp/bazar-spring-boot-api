@@ -82,5 +82,18 @@ class ClienteServiceIntegrationTest {
         void addClienteNuloDeberiaLanzarExcepcion() {
             assertThrows(IllegalArgumentException.class, () -> clienteService.addCliente(null), ErrorMsgs.PARAMETRO_NULO);
         }
+
+        @Test
+        @Order(6)
+        void updateNombreCliente() {
+            UpdateClienteDTO updateClienteDTO = new UpdateClienteDTO("Marcelo", null, null);
+            ClienteResponseDTO clienteResponseDTO = clienteService.updateCliente(1L, updateClienteDTO);
+
+            assertNotNull(clienteResponseDTO);
+            assertEquals(updateClienteDTO.getNombre(), clienteResponseDTO.getNombre());
+            assertEquals(Datos.ADD_CLIENTE_DTO.getApellido(), clienteResponseDTO.getApellido());
+            assertEquals(Datos.ADD_CLIENTE_DTO.getDni(), clienteResponseDTO.getDni());
+        }
+//        TO DO: deleteClienteConVentasDeberiaLanzarExcepcion
     }
 }
