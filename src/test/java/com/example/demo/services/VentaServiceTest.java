@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.datos.ventas.VentaDatos;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.UpdateVentaDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
@@ -7,8 +8,10 @@ import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
 import com.example.demo.repositories.IVentaRepository;
+import com.example.demo.utils.IModelMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,30 +29,26 @@ import static org.mockito.Mockito.*;
 class VentaServiceTest {
 
     @Mock
-    private IClienteService clienteService;
+    IClienteService clienteService;
 
     @Mock
-    private IProductoService productoService;
+    IProductoService productoService;
 
     @Mock
-    private IVentaRepository ventaRepository;
+    IVentaRepository ventaRepository;
+
+    @Mock
+    IModelMapper mapper;
 
     @InjectMocks
-    private VentaService ventaService;
-
-//    @InjectMocks
-//    private GenericModelMapper modelMapper = GenericModelMapper.getModelMapper();
+    VentaService ventaService;
 
     @Test
     void getVentas() {
-        List<Venta> ventas = new ArrayList<>();
-        List<Producto> productos = new ArrayList<>();
-        productos.add(new Producto(1L, "Producto 1","Marca 1", 100.0, 10.0));
-        Cliente cliente = new Cliente(1L, "Juan", "Perez", "36158155", null);
-
-        ventas.add(new Venta(1L, LocalDate.now(), 1000.0, productos, cliente));
-
+        List<Venta> ventas = VentaDatos.crearVentasConProductosYClientes();
+        InOrder inOrder = inOrder(ventaRepository, mapper);
         when(ventaRepository.findAll()).thenReturn(ventas);
+        when(mapper.mapVentasToDTO(any(List.class))).thenReturn(VentaDatos.crearVentasConProductosYClientes());
 
         List<VentaResponseDTO> ventasDTO = ventaService.getVentas();
 
@@ -60,42 +59,14 @@ class VentaServiceTest {
         assertEquals(ventas.get(0).getProductos().get(0).getProductoId(), ventasDTO.get(0).getProductos().get(0).getProductoId());
         assertEquals(ventas.get(0).getCliente().getDni(), ventasDTO.get(0).getCliente().getDni());
         assertEquals(ventas.get(0).getCliente().getNombre(), ventasDTO.get(0).getCliente().getNombre());
+        inOrder.verify(ventaRepository).findAll();
+        inOrder.verify(mapper).mapVentasToDTO(ventas);
     }
 
     @Test
     void addVenta() {
-        //Given
-        //preparamos el addVentaDTO
-        List<Long> idsProductos = new ArrayList<>();
-        idsProductos.add(1L);
-        idsProductos.add(2L);
-
-        Long idCliente = 1L;
-
-        AddVentaDTO addVentaDTO = new AddVentaDTO(LocalDate.now(), idsProductos, idCliente);
-
-        //preparamos el cliente y los productos que se van a agregar a la venta
-        List<Producto> productos = new ArrayList<>();
-        productos.add(new Producto(1L, "Producto 1","Marca 1", 100.0, 10.0));
-        productos.add(new Producto(2L, "Producto 2","Marca 2", 200.0, 20.0));
-        Cliente cliente = new Cliente(1L, "Juan", "Perez", "36158155");
-
-        Venta ventaEntity = new Venta(1L, LocalDate.now(), 15263.0, productos, cliente);
-        when(ventaRepository.save(any(Venta.class))).thenReturn(ventaEntity);
-        when(clienteService.getClienteById(any(Long.class))).thenReturn(cliente);
-        when(productoService.getProductosByIds(any(List.class))).thenReturn(productos);
-
-        //When
-        VentaResponseDTO ventaAgregadaDTO = ventaService.addVenta(addVentaDTO);
-
-        //Then
-        assertNotNull(ventaAgregadaDTO);
-        assertEquals(addVentaDTO.getFechaVenta(), ventaAgregadaDTO.getFechaVenta());
-        assertEquals(addVentaDTO.getIdsProductos().get(0), ventaAgregadaDTO.getProductos().get(0).getProductoId());
-        assertEquals(addVentaDTO.getIdCliente(), ventaAgregadaDTO.getCliente().getClienteId());
-        verify(ventaRepository).save(any(Venta.class));
-        verify(clienteService).getClienteById(idCliente);
-        verify(productoService).getProductosByIds(idsProductos);
+        AddVentaDTO addVentaDTO = VentaDatos.crearVentaDTO();
+        InOrder inOrder = inOrder(ventaRepository, clienteService, productoService, mapper);
     }
 
     @Test

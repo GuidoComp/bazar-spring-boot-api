@@ -1,31 +1,21 @@
 package com.example.demo.services;
 
-import com.example.demo.Datos;
+import com.example.demo.datos.clientes.ClienteDatos;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.RestrictException;
-import com.example.demo.models.Cliente;
-import com.example.demo.models.Producto;
-import com.example.demo.models.Venta;
-import com.example.demo.repositories.IClienteRepository;
 import com.example.demo.utils.ErrorMsgs;
-import com.example.demo.utils.GenericModelMapper;
-import org.hibernate.sql.Update;
+
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -48,7 +38,7 @@ class ClienteServiceIntegrationTest {
         @Test
         @Order(2)
         void addCliente() {
-            AddClienteDTO addClienteDTO = Datos.ADD_CLIENTE_DTO;
+            AddClienteDTO addClienteDTO = ClienteDatos.crearAddClienteDTO();
             ClienteResponseDTO clienteResponseDTO = clienteService.addCliente(addClienteDTO);
 
             assertNotNull(clienteResponseDTO);
@@ -60,19 +50,20 @@ class ClienteServiceIntegrationTest {
         @Test
         @Order(3)
         void getAllClientes() {
+            AddClienteDTO addClienteDTO = ClienteDatos.crearAddClienteDTO();
             List<ClienteResponseDTO> clientesDb = clienteService.getClientes();
 
             assertNotNull(clientesDb);
             assertEquals(1, clientesDb.size());
-            assertEquals(Datos.ADD_CLIENTE_DTO.getDni(), clientesDb.get(0).getDni());
-            assertEquals(Datos.ADD_CLIENTE_DTO.getNombre(), clientesDb.get(0).getNombre());
-            assertEquals(Datos.ADD_CLIENTE_DTO.getApellido(), clientesDb.get(0).getApellido());
+            assertEquals(addClienteDTO.getDni(), clientesDb.get(0).getDni());
+            assertEquals(addClienteDTO.getNombre(), clientesDb.get(0).getNombre());
+            assertEquals(addClienteDTO.getApellido(), clientesDb.get(0).getApellido());
         }
 
         @Test
         @Order(4)
         void agregarClienteYaAgregadoDeberiaLanzarExcepcion() {
-            AddClienteDTO addClienteDTO = Datos.ADD_CLIENTE_DTO;
+            AddClienteDTO addClienteDTO = ClienteDatos.crearAddClienteDTO();
 
             assertThrows(RestrictException.class, () -> clienteService.addCliente(addClienteDTO), ErrorMsgs.CREAR_CLIENTE_DNI_FK);
         }
@@ -86,13 +77,14 @@ class ClienteServiceIntegrationTest {
         @Test
         @Order(6)
         void updateNombreCliente() {
+            AddClienteDTO addClienteDTO = ClienteDatos.crearAddClienteDTO();
             UpdateClienteDTO updateClienteDTO = new UpdateClienteDTO("Marcelo", null, null);
             ClienteResponseDTO clienteResponseDTO = clienteService.updateCliente(1L, updateClienteDTO);
 
             assertNotNull(clienteResponseDTO);
             assertEquals(updateClienteDTO.getNombre(), clienteResponseDTO.getNombre());
-            assertEquals(Datos.ADD_CLIENTE_DTO.getApellido(), clienteResponseDTO.getApellido());
-            assertEquals(Datos.ADD_CLIENTE_DTO.getDni(), clienteResponseDTO.getDni());
+            assertEquals(addClienteDTO.getApellido(), clienteResponseDTO.getApellido());
+            assertEquals(addClienteDTO.getDni(), clienteResponseDTO.getDni());
         }
 //        TO DO: deleteClienteConVentasDeberiaLanzarExcepcion
     }

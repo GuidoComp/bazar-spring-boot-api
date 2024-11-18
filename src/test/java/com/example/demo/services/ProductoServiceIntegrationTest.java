@@ -1,6 +1,6 @@
 package com.example.demo.services;
 
-import com.example.demo.Datos;
+import com.example.demo.datos.productos.ProductoDatos;
 import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
 import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
@@ -41,7 +41,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(2)
     void addProducto() {
-        AddProductoDTO addProductoDTO = Datos.ADD_PRODUCTO_DTO;
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
 
         var productoResponseDTO = service.addProducto(addProductoDTO);
 
@@ -54,7 +54,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(3)
     void addProductoExistenteLanzaExcepcion() {
-        AddProductoDTO addProductoDTO = Datos.ADD_PRODUCTO_DTO;
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
 
         assertThrows(RestrictException.class, () -> service.addProducto(addProductoDTO), ErrorMsgs.PRODUCTO_YA_INGRESADO);
     }
@@ -62,12 +62,15 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(4)
     void deleteProducto() {
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+
         ProductoResponseDTO productoResponseDTO = service.deleteProducto(1L);
+
         assertNotNull(productoResponseDTO);
         assertEquals(1L, productoResponseDTO.getProductoId());
-        assertEquals(Datos.ADD_PRODUCTO_DTO.getNombre(), productoResponseDTO.getNombre());
-        assertEquals(Datos.ADD_PRODUCTO_DTO.getMarca(), productoResponseDTO.getMarca());
-        assertFalse(service.productoExistente(Datos.ADD_PRODUCTO_DTO.getNombre(), Datos.ADD_PRODUCTO_DTO.getMarca()));
+        assertEquals(addProductoDTO.getNombre(), productoResponseDTO.getNombre());
+        assertEquals(addProductoDTO.getMarca(), productoResponseDTO.getMarca());
+        assertFalse(service.productoExistente(addProductoDTO.getNombre(), addProductoDTO.getMarca()));
     }
 
     @Test
@@ -90,7 +93,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(7)
     void updateProducto() {
-        AddProductoDTO addProductoDto = Datos.ADD_PRODUCTO_DTO;
+        AddProductoDTO addProductoDto = ProductoDatos.crearAddProductoDTO();
         service.addProducto(addProductoDto);
         ProductoResponseDTO productoResponseDTO = service.updateProducto(2L, new UpdateProductoDTO("Nuevo nombre", "Nueva marca", null, null));
 

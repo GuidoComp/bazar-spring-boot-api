@@ -1,6 +1,6 @@
 package com.example.demo.services;
 
-import com.example.demo.Datos;
+import com.example.demo.datos.clientes.ClienteDatos;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
@@ -40,25 +40,26 @@ class ClienteServiceTest {
     @Order(1)
     void addCliente() {
         //Given
-        when(mapper.mapAddClienteDTOToCliente(any())).thenReturn(Datos.CLIENTE_SIN_VENTAS);
-        when(clienteRepository.save(any(Cliente.class))).thenReturn(Datos.CLIENTE_SIN_VENTAS);
+        Cliente cliente = ClienteDatos.crearClienteSinVentas();
+        when(mapper.mapAddClienteDTOToCliente(any())).thenReturn(cliente);
+        when(clienteRepository.save(any(Cliente.class))).thenReturn(cliente);
         when(mapper.mapClienteToDTO(any(Cliente.class))).thenReturn(new ClienteResponseDTO(1L, "Juan", "Perez", "36158155"));
 
         //When
-        ClienteResponseDTO clienteAgregadoDTO = clienteService.addCliente(Datos.ADD_CLIENTE_DTO);
+        ClienteResponseDTO clienteAgregadoDTO = clienteService.addCliente(ClienteDatos.crearAddClienteDTO());
 
         //Then
         assertNotNull(clienteAgregadoDTO);
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getNombre(), clienteAgregadoDTO.getNombre());
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getApellido(), clienteAgregadoDTO.getApellido());
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getDni(), clienteAgregadoDTO.getDni());
+        assertEquals(cliente.getNombre(), clienteAgregadoDTO.getNombre());
+        assertEquals(cliente.getApellido(), clienteAgregadoDTO.getApellido());
+        assertEquals(cliente.getDni(), clienteAgregadoDTO.getDni());
     }
 
     @Test
     @Order(2)
     void getClienteByDni() {
         String dni = "36158155";
-        when(clienteRepository.findClienteByDni(any())).thenReturn(Optional.of(Datos.CLIENTE_SIN_VENTAS));
+        when(clienteRepository.findClienteByDni(any())).thenReturn(Optional.of(ClienteDatos.crearClienteSinVentas()));
 
         Optional<Cliente> clienteByDni = clienteService.getClienteByDni(dni);
 
@@ -88,8 +89,9 @@ class ClienteServiceTest {
                 new ClienteResponseDTO(1L, "Juan", "Perez", "36158155"),
                 new ClienteResponseDTO(2L, "Marcelo", "Troncho", "36158156")
         );
-        when(clienteRepository.findAll()).thenReturn(Datos.CLIENTES_SIN_VENTAS);
-        when(mapper.mapClientesToDTO(Datos.CLIENTES_SIN_VENTAS)).thenReturn(clienteResponseDTOS);
+        List<Cliente> clientes = ClienteDatos.crearClientesSinVentas();
+        when(clienteRepository.findAll()).thenReturn(clientes);
+        when(mapper.mapClientesToDTO(clientes)).thenReturn(clienteResponseDTOS);
 
         //When
         List<ClienteResponseDTO> clientesDTO = clienteService.getClientes();
@@ -125,22 +127,23 @@ class ClienteServiceTest {
     @Test
     @Order(6)
     void deleteCliente() {
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(Datos.CLIENTE_SIN_VENTAS));
-        when(mapper.mapClienteToDTO(Datos.CLIENTE_SIN_VENTAS)).thenReturn(new ClienteResponseDTO(1L, "Juan", "Perez", "36158155"));
+        Cliente cliente = ClienteDatos.crearClienteSinVentas();
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(mapper.mapClienteToDTO(cliente)).thenReturn(new ClienteResponseDTO(1L, "Juan", "Perez", "36158155"));
 
         ClienteResponseDTO clienteDTO = clienteService.deleteCliente(1L);
 
         assertNotNull(clienteDTO);
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getClienteId(), clienteDTO.getClienteId());
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getNombre(), clienteDTO.getNombre());
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getApellido(), clienteDTO.getApellido());
-        assertEquals(Datos.CLIENTE_SIN_VENTAS.getDni(), clienteDTO.getDni());
+        assertEquals(cliente.getClienteId(), clienteDTO.getClienteId());
+        assertEquals(cliente.getNombre(), clienteDTO.getNombre());
+        assertEquals(cliente.getApellido(), clienteDTO.getApellido());
+        assertEquals(cliente.getDni(), clienteDTO.getDni());
     }
 
     @Test
     @Order(7)
     void deleteClienteConVentasArrojaExcepcion() {
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(Datos.CLIENTE_CON_VENTAS));
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(ClienteDatos.crearClienteConVentas()));
         assertThrows(RestrictException.class, () -> clienteService.deleteCliente(1L), ErrorMsgs.DELETE_CLIENTE_RESTRICCION_FK);
     }
 
@@ -157,7 +160,7 @@ class ClienteServiceTest {
     void updateCliente() {
         // Given
         UpdateClienteDTO updateClienteDTO = new UpdateClienteDTO("Sebastian", "Royanos", "22333111");
-        Cliente clienteEnDb = Datos.CLIENTE_SIN_VENTAS;
+        Cliente clienteEnDb = ClienteDatos.crearClienteSinVentas();
         Cliente clienteActualizado = new Cliente(1L, "Sebastian", "Royanos", "22333111");
 
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(clienteEnDb));
