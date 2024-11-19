@@ -9,6 +9,7 @@ import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
+import com.example.demo.repositories.IVentaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,12 +19,20 @@ public class VentaDatos {
         return List.of(new Venta(1L, LocalDate.now(), 1000.0, null, null));
     }
 
-    public static AddVentaDTO crearVentaDTO() {
+    public static AddVentaDTO crearVenta1DTO() {
         return new AddVentaDTO(LocalDate.now(), List.of(1L, 2L), 1L);
     }
 
-    public static Venta crearVentaConProductosYCliente() {
-        return new Venta(1L, LocalDate.now(), 1000.0, ProductoDatos.crearProductosConYSinVentas(), ClienteDatos.crearClienteSinVentas());
+    public static VentaResponseDTO crearVenta1ResponseDTO() {
+        return new VentaResponseDTO(1L, LocalDate.now(), 300.0, ProductoDatos.crearProductos1ResponseDTO(), ClienteDatos.crearClienteResponseDTO());
+    }
+
+    public static VentaResponseDTO crearVentaResponseDTOSinProductos() {
+        return new VentaResponseDTO(1L, LocalDate.now(), 1000.0, null, ClienteDatos.crearClienteResponseDTO());
+    }
+
+    public static Venta crearVenta1ConProductosYCliente() {
+        return new Venta(1L, LocalDate.now(), 300.0, ProductoDatos.crearProductosConYSinVentas(), ClienteDatos.crearClienteSinVentas());
     }
 
     public static List<Venta> crearVentasConProductosYClientes() {

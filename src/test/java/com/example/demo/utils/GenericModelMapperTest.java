@@ -160,7 +160,7 @@ class GenericModelMapperTest {
         @Test
         @DisplayName("AddVentaDTO a Venta")
         void mapAddVentaDTOtoVenta() {
-            AddVentaDTO addVentaDTO = VentaDatos.crearVentaDTO();
+            AddVentaDTO addVentaDTO = VentaDatos.crearVenta1DTO();
             Venta venta = mapper.mapAddVentaDTOToVenta(addVentaDTO);
 
             assertNotNull(venta);
@@ -172,7 +172,7 @@ class GenericModelMapperTest {
         @Test
         @DisplayName("Venta -con Productos y Cliente- a DTO")
         void mapVentaToDTO() {
-            Venta mockVenta = VentaDatos.crearVentaConProductosYCliente();
+            Venta mockVenta = VentaDatos.crearVenta1ConProductosYCliente();
             VentaResponseDTO ventaResponseDTO = mapper.mapVentaToDTO(mockVenta);
 
             assertNotNull(ventaResponseDTO);

@@ -2,6 +2,7 @@ package com.example.demo.datos.clientes;
 
 import com.example.demo.datos.ventas.VentaDatos;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
+import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Venta;
 
@@ -15,6 +16,10 @@ public class ClienteDatos {
                 new Cliente(2L, "Pedro", "Gomez", "36158156", null),
                 new Cliente(3L, "Marcelo", "Troncho", "36158188")
         );
+    }
+
+    public static ClienteResponseDTO crearClienteResponseDTO() {
+        return new ClienteResponseDTO(1L, "Juan", "Perez", "36158155");
     }
 
     public static AddClienteDTO crearAddClienteDTO() {

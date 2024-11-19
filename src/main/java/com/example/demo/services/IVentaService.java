@@ -30,4 +30,6 @@ public interface IVentaService {
     List<Venta> getVentasByDate(LocalDate fecha);
 
     InfoMayorVenta getInfoMayorVenta();
+
+    void borrarProductos(Venta venta);
 }

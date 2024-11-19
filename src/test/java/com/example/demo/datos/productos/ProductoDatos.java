@@ -33,6 +33,17 @@ public class ProductoDatos {
         );
     }
 
+    public static ProductoResponseDTO crearProducto1ResponseDTO() {
+        return new ProductoResponseDTO(1L, "Producto 1", "Marca 1", 100.0, 10.0);
+    }
+
+    public static List<ProductoResponseDTO> crearProductos1ResponseDTO() {
+        return List.of(
+                new ProductoResponseDTO(1L, "Producto 1", "Marca 1", 100.0, 10.0),
+                new ProductoResponseDTO(2L, "Producto 2", "Marca 2", 200.0, 20.0)
+        );
+    }
+
     public static ProductoResponseDTO crearProductoResponseDTO() {
         return new ProductoResponseDTO(1L, "Procesador", "Intel Core i5 14600KF", 400000.0, 10.0);
     }
@@ -72,4 +83,6 @@ public class ProductoDatos {
                 new ProductoResponseDTO(4L, "Producto 4", "Marca 4", 400.0, 1.0)
         );
     }
+
+
 }

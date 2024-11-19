@@ -4,6 +4,7 @@ import com.example.demo.dtos.requestDTOs.clienteDTOs.AddClienteDTO;
 import com.example.demo.dtos.requestDTOs.clienteDTOs.UpdateClienteDTO;
 import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.models.Cliente;
+import com.example.demo.models.Venta;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface IClienteService {
     Optional<Cliente> getClienteByDni(String dni);
 
     void deleteAllClientes();
+
+    void agregarVenta(Cliente nuevoCliente, Venta venta);
 }

@@ -6,6 +6,7 @@ import com.example.demo.dtos.responseDTOs.clienteDTOs.ClienteResponseDTO;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Cliente;
+import com.example.demo.models.Venta;
 import com.example.demo.repositories.IClienteRepository;
 import com.example.demo.utils.ErrorMsgs;
 import com.example.demo.utils.IModelMapper;
@@ -56,6 +57,12 @@ public class ClienteService implements IClienteService {
     @Transactional
     public void deleteAllClientes() {
         this.clienteRepository.deleteAll();
+    }
+
+    @Override
+    public void agregarVenta(Cliente cliente, Venta venta) {
+        cliente.agregarVenta(venta);
+        clienteRepository.save(cliente);
     }
 
     @Override

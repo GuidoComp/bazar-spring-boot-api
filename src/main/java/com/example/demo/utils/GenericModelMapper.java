@@ -10,12 +10,15 @@ import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GenericModelMapper implements IModelMapper {
@@ -74,13 +77,27 @@ public class GenericModelMapper implements IModelMapper {
     @Override
     public Venta mapAddVentaDTOToVenta(AddVentaDTO addVentaDTO) {
         checkNull(addVentaDTO);
+        TypeMap<AddVentaDTO, Venta> typeMap = mapper.createTypeMap(AddVentaDTO.class, Venta.class);
+        typeMap.addMapping(AddVentaDTO::getFechaVenta, Venta::setFechaVenta);
         return mapper.map(addVentaDTO, Venta.class);
     }
 
     @Override
     public VentaResponseDTO mapVentaToDTO(Venta ventaDb) {
         checkNull(ventaDb);
-        return mapper.map(ventaDb, VentaResponseDTO.class);
+        Converter<List<Producto>, List<ProductoResponseDTO>> productosConverter =
+                ctx -> ctx.getSource().stream()
+                        .map(producto -> mapper.map(producto, ProductoResponseDTO.class))
+                        .collect(Collectors.toList());
+
+        TypeMap<Venta, VentaResponseDTO> typeMap = mapper.createTypeMap(Venta.class, VentaResponseDTO.class);
+        typeMap.addMapping(Venta::getVentaId, VentaResponseDTO::setVentaId);
+        typeMap.addMapping(Venta::getFechaVenta, VentaResponseDTO::setFechaVenta);
+        typeMap.addMapping(Venta::getTotal, VentaResponseDTO::setTotal);
+        typeMap.addMappings(mapper -> mapper.using(productosConverter).map(Venta::getProductos, VentaResponseDTO::setProductos));
+        typeMap.addMapping(Venta::getCliente, VentaResponseDTO::setCliente);
+
+        return typeMap.map(ventaDb);
     }
 
     @Override

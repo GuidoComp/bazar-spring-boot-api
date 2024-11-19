@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.UpdateVentaDTO;
 import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
@@ -47,47 +48,46 @@ public class VentaService implements IVentaService {
     @Override
     @Transactional
     public VentaResponseDTO addVenta(AddVentaDTO addVentaDTO) {
-        Venta venta = mapper.mapAddVentaDTOToVenta(addVentaDTO);
+        Venta venta = new Venta();
+        venta.setFechaVenta(addVentaDTO.getFechaVenta());
+        this.agregarProductos(addVentaDTO.getIdsProductos(), venta);
+        this.agregarCliente(addVentaDTO.getIdCliente(), venta);
 
-        agregarCliente(addVentaDTO.getIdCliente(), venta);
-        agregarProductos(addVentaDTO.getIdsProductos(), venta);
+        ventaRepository.save(venta);
 
-        Venta ventaDb = ventaRepository.save(venta);
-        return mapper.mapVentaToDTO(ventaDb);
+        return mapper.mapVentaToDTO(venta);
     }
 
     private void agregarCliente(Long idCliente, Venta venta) {
-        Cliente nuevoCliente = clienteService.getClienteById(idCliente);
-        Cliente clienteAnterior = venta.getCliente();
-
-        if (clienteAnterior != null) {
-            clienteAnterior.borrarVenta(venta);
-//            clienteService.save(clienteAnterior);
-        }
-        nuevoCliente.agregarVenta(venta);
-//        clienteService.save(nuevoCliente);
-
-        venta.agregarCliente(nuevoCliente);
+        Cliente cliente = clienteService.getClienteById(idCliente);
+        venta.setCliente(cliente);
     }
 
     private void agregarProductos(List<Long> idsProductos, Venta venta) {
         List<Producto> productos = productoService.getProductosByIds(idsProductos);
-        double monto = 0;
-        for(Producto p: productos) {
-            productoService.checkStock(p);
-            venta.agregarProducto(p);
-            monto += p.getCosto();
-        }
-        venta.setTotal(monto);
+        productos.stream()
+                .forEach(p -> {
+                    productoService.checkStock(p);
+                    this.agregarProducto(p, venta);
+                });
+
+        double total = productos.stream()
+                .mapToDouble(Producto::getCosto)
+                .sum();
+        venta.setTotal(total);
+    }
+
+    private void agregarProducto(Producto p, Venta venta) {
+        productoService.updateProducto(p.getProductoId(), new UpdateProductoDTO(null, null, null, p.getCantidadDisponible() - 1));
+        venta.getProductos().add(p); // Al agregar el producto a la venta (con el ventaRepository.save(venta)), por la cascada se agrega la venta al producto
     }
 
     @Override
     @Transactional
     public VentaResponseDTO deleteVenta(Long id) {
         Venta venta = ventaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMsgs.VENTA_NOT_FOUND, id)));
-        venta.borrarProductos();
+        this.borrarProductos(venta);
         ventaRepository.delete(venta);
-
         return mapper.mapVentaToDTO(venta);
     }
 
@@ -112,9 +112,18 @@ public class VentaService implements IVentaService {
         return mapper.mapVentaToDTO(venta);
     }
 
+    @Override
+    public void borrarProductos(Venta venta) {
+        venta.getProductos().forEach(p -> {
+            productoService.updateProducto(p.getProductoId(), new UpdateProductoDTO(null, null, null, p.getCantidadDisponible() + 1));
+        });
+        venta.setTotal(0.0);
+        venta.setProductos(new LinkedList<>());
+    }
+
     private void actualizarProductos(List<Long> idsProductosNuevos, Venta venta) {
         checkProductos(idsProductosNuevos, venta);
-        venta.borrarProductos();
+        this.borrarProductos(venta);
         agregarProductos(idsProductosNuevos, venta);
     }
 
