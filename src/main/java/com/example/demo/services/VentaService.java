@@ -122,24 +122,22 @@ public class VentaService implements IVentaService {
     }
 
     private void actualizarProductos(List<Long> idsProductosNuevos, Venta venta) {
-        checkProductos(idsProductosNuevos, venta);
+        this.checkProductos(idsProductosNuevos, venta);
         this.borrarProductos(venta);
-        agregarProductos(idsProductosNuevos, venta);
+        this.agregarProductos(idsProductosNuevos, venta);
     }
 
     private void checkProductos(List<Long> idsProductos, Venta venta) {
-        List<Long> idsProductosVentaDb = getIdsDeProductos(venta);
+        List<Long> idsProductosVentaDb = this.getIdsDeProductos(venta);
         if (idsProductosVentaDb.equals(idsProductos)) {
             throw new EqualProductsIds(ErrorMsgs.UPDATE_PRODUCTOS_NO_PERMITIDO);
         }
     }
 
     private List<Long> getIdsDeProductos(Venta venta) {
-        List<Long> idsProductos = new LinkedList<>();
-        for(Producto producto: venta.getProductos()) {
-            idsProductos.add(producto.getProductoId());
-        }
-        return idsProductos;
+        return venta.getProductos().stream()
+                .map(Producto::getProductoId)
+                .toList();
     }
 
     @Override
