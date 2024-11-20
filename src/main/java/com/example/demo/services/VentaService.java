@@ -21,8 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VentaService implements IVentaService {
@@ -142,10 +144,7 @@ public class VentaService implements IVentaService {
 
     @Override
     public List<ProductoResponseDTO> getProductosDTODeVenta(Long idVenta) {
-        List<ProductoResponseDTO> productosDTO;
-        Venta venta = getVentaById(idVenta);
-        productosDTO = mapper.mapProductosToDTO(venta.getProductos());
-        return productosDTO;
+        return mapper.mapProductosToDTO(getVentaById(idVenta).getProductos());
     }
 
     @Override
@@ -157,24 +156,16 @@ public class VentaService implements IVentaService {
     @Override
     public MontoYCantidadTotalDTO getMontoYCantidadTotales(LocalDate fechaVenta) {
         List<Venta> ventasOfDate = getVentasByDate(fechaVenta);
-        double monto = 0;
-        for (Venta ventas: ventasOfDate) {
-            monto += ventas.getTotal();
-        }
+        double monto = ventasOfDate.stream()
+                .mapToDouble(Venta::getTotal)
+                .sum();
         return new MontoYCantidadTotalDTO(fechaVenta, monto, ventasOfDate.size());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Venta> getVentasByDate(LocalDate fecha) {
-        List<Venta> ventas = ventaRepository.findAll();
-        List<Venta> ventasOfDate = new LinkedList<>();
-
-        for (Venta venta: ventas) {
-            if (venta.getFechaVenta().equals(fecha)) {
-                ventasOfDate.add(venta);
-            }
-        }
+        List<Venta> ventasOfDate = ventaRepository.findByFechaVenta(fecha);
         if (ventasOfDate.isEmpty()) throw new ResourceNotFoundException(String.format(ErrorMsgs.NO_SALES_FOR_THAT_DATE, fecha));
         return ventasOfDate;
     }
@@ -182,17 +173,18 @@ public class VentaService implements IVentaService {
     @Override
     @Transactional(readOnly = true)
     public InfoMayorVenta getInfoMayorVenta() {
-        double montoMayor = 0;
         List<Venta> ventas = ventaRepository.findAll();
         if (ventas.isEmpty()) throw new ResourceNotFoundException(ErrorMsgs.NO_SALES_YET);
-        Venta ventaMayor = new Venta();
+        Venta ventaMayor = ventas.stream()
+                .max(Comparator.comparingDouble(Venta::getTotal))
+                .get();
 
-        for(Venta venta: ventas) {
-            if (venta.getTotal() > montoMayor) {
-                montoMayor = venta.getTotal();
-                ventaMayor = venta;
-            }
-        }
-        return new InfoMayorVenta(ventaMayor.getVentaId(), ventaMayor.getTotal(), ventaMayor.getProductos().size(), ventaMayor.getCliente().getNombre(), ventaMayor.getCliente().getApellido());
+        return new InfoMayorVenta(
+                ventaMayor.getVentaId(),
+                ventaMayor.getTotal(),
+                ventaMayor.getProductos().size(),
+                ventaMayor.getCliente().getNombre(),
+                ventaMayor.getCliente().getApellido()
+        );
     }
 }
