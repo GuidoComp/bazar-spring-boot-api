@@ -43,13 +43,4 @@ public class Venta {
         this.fechaVenta = fechaVenta;
         this.ventaId = ventaId;
     }
-
-//    public void borrarProductos() {
-//        setTotal(0.0);
-//        for(Producto p: productos) {
-//            p.setCantidadDisponible(p.getCantidadDisponible() + 1);
-//            p.quitarVenta(this);
-//        }
-//        productos.clear();
-//    }
 }

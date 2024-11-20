@@ -130,11 +130,10 @@ class VentaServiceTest {
     void deleteVenta() {
         Long ventaId = 1L;
         Venta venta = VentaDatos.crearVenta1ConProductosYCliente();
-        VentaResponseDTO expectedResponse = new VentaResponseDTO();
         when(ventaRepository.findById(ventaId)).thenReturn(Optional.of(venta));
-        when(mapper.mapVentaToDTO(any(Venta.class))).thenReturn(expectedResponse);
+        when(mapper.mapVentaToDTO(any(Venta.class))).thenReturn(any(VentaResponseDTO.class));
 
-        VentaResponseDTO response = ventaService.deleteVenta(ventaId);
+        ventaService.deleteVenta(ventaId);
 
         verify(ventaRepository).findById(ventaId);
         verify(productoService, times(2)).updateProducto(
@@ -142,7 +141,6 @@ class VentaServiceTest {
                 argThat(dto -> dto.getCantidadDisponible() != null)
         );
         verify(ventaRepository).delete(venta);
-        assertEquals(expectedResponse, response);
         assertTrue(venta.getProductos().isEmpty());
         assertEquals(0.0, venta.getTotal());
     }

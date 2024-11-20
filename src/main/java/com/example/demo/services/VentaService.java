@@ -69,7 +69,6 @@ public class VentaService implements IVentaService {
         List<Producto> productos = productoService.getProductosByIds(idsProductos);
         productos.stream()
                 .forEach(p -> {
-                    productoService.checkStock(p);
                     this.agregarProducto(p, venta);
                 });
 
@@ -80,6 +79,7 @@ public class VentaService implements IVentaService {
     }
 
     private void agregarProducto(Producto p, Venta venta) {
+        productoService.checkStock(p);
         productoService.updateProducto(p.getProductoId(), new UpdateProductoDTO(null, null, null, p.getCantidadDisponible() - 1));
         venta.getProductos().add(p); // Al agregar el producto a la venta (con el ventaRepository.save(venta)), por la cascada se agrega la venta al producto
     }

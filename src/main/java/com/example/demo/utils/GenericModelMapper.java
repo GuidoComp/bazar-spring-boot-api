@@ -85,19 +85,14 @@ public class GenericModelMapper implements IModelMapper {
     @Override
     public VentaResponseDTO mapVentaToDTO(Venta ventaDb) {
         checkNull(ventaDb);
-        Converter<List<Producto>, List<ProductoResponseDTO>> productosConverter =
-                ctx -> ctx.getSource().stream()
-                        .map(producto -> mapper.map(producto, ProductoResponseDTO.class))
-                        .collect(Collectors.toList());
+        mapper.typeMap(Venta.class, VentaResponseDTO.class).addMappings(mapper -> {
+            mapper.map(Venta::getProductos, VentaResponseDTO::setProductos);
+            mapper.map(Venta::getCliente, VentaResponseDTO::setCliente);
+        });
 
-        TypeMap<Venta, VentaResponseDTO> typeMap = mapper.createTypeMap(Venta.class, VentaResponseDTO.class);
-        typeMap.addMapping(Venta::getVentaId, VentaResponseDTO::setVentaId);
-        typeMap.addMapping(Venta::getFechaVenta, VentaResponseDTO::setFechaVenta);
-        typeMap.addMapping(Venta::getTotal, VentaResponseDTO::setTotal);
-        typeMap.addMappings(mapper -> mapper.using(productosConverter).map(Venta::getProductos, VentaResponseDTO::setProductos));
-        typeMap.addMapping(Venta::getCliente, VentaResponseDTO::setCliente);
+        VentaResponseDTO ventaResponseDTO = mapper.map(ventaDb, VentaResponseDTO.class);
 
-        return typeMap.map(ventaDb);
+        return ventaResponseDTO;
     }
 
     @Override
