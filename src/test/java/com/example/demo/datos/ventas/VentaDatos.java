@@ -9,10 +9,8 @@ import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
-import com.example.demo.repositories.IVentaRepository;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 public class VentaDatos {
@@ -20,7 +18,7 @@ public class VentaDatos {
         return List.of(new Venta(1L, LocalDate.now(), 1000.0, null, null));
     }
 
-    public static AddVentaDTO crearVenta1DTO() {
+    public static AddVentaDTO crearAddVenta1DTO() {
         return new AddVentaDTO(LocalDate.now(), List.of(1L, 2L), 1L);
     }
 

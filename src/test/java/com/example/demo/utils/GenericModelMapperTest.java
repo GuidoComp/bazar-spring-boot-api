@@ -59,7 +59,7 @@ class GenericModelMapperTest {
         @DisplayName("DTO a Producto")
         public void deberiaMappearUnProductoDTOEnProducto() {
             // Act
-            AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+            AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
             Producto producto = mapper.mapDTOToProducto(addProductoDTO);
             // Assert
             assertEquals(addProductoDTO.getNombre(), producto.getNombre());
@@ -160,7 +160,7 @@ class GenericModelMapperTest {
         @Test
         @DisplayName("AddVentaDTO a Venta")
         void mapAddVentaDTOtoVenta() {
-            AddVentaDTO addVentaDTO = VentaDatos.crearVenta1DTO();
+            AddVentaDTO addVentaDTO = VentaDatos.crearAddVenta1DTO();
             Venta venta = mapper.mapAddVentaDTOToVenta(addVentaDTO);
 
             assertNotNull(venta);

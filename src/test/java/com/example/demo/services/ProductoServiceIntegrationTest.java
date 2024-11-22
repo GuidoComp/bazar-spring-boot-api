@@ -41,7 +41,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(2)
     void addProducto() {
-        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
 
         var productoResponseDTO = service.addProducto(addProductoDTO);
 
@@ -54,7 +54,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(3)
     void addProductoExistenteLanzaExcepcion() {
-        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
 
         assertThrows(RestrictException.class, () -> service.addProducto(addProductoDTO), ErrorMsgs.PRODUCTO_YA_INGRESADO);
     }
@@ -62,7 +62,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(4)
     void deleteProducto() {
-        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
 
         ProductoResponseDTO productoResponseDTO = service.deleteProducto(1L);
 
@@ -93,7 +93,7 @@ class ProductoServiceIntegrationTest {
     @Test
     @Order(7)
     void updateProducto() {
-        AddProductoDTO addProductoDto = ProductoDatos.crearAddProductoDTO();
+        AddProductoDTO addProductoDto = ProductoDatos.crearAddProducto1DTO();
         service.addProducto(addProductoDto);
         ProductoResponseDTO productoResponseDTO = service.updateProducto(2L, new UpdateProductoDTO("Nuevo nombre", "Nueva marca", null, null));
 

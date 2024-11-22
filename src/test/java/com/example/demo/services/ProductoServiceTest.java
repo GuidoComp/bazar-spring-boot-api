@@ -64,7 +64,7 @@ class ProductoServiceTest {
     @Test
     void addProductoNoExistenteTest() {
         //Given
-        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+        AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
         ProductoResponseDTO productoResponseDTO = ProductoDatos.crearProductoResponseDTO();
         Producto producto = ProductoDatos.crearProducto();
 
@@ -94,7 +94,7 @@ class ProductoServiceTest {
     void addProductoExistenteLanzaExcepcionTest() {
         assertThrows(RestrictException.class, () -> {
             //Given
-            AddProductoDTO addProductoDTO = ProductoDatos.crearAddProductoDTO();
+            AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
             Producto producto = ProductoDatos.crearProducto();
 
             when(mapper.mapDTOToProducto(any(AddProductoDTO.class))).thenReturn(producto);

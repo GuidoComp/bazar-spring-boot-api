@@ -36,4 +36,5 @@ public class ErrorMsgs {
     public static final String CREAR_CLIENTE_DNI_FK = "Cliente ya ingresado en sistema";
     public static final String UPDATE_PRODUCTOS_NO_PERMITIDO = "No se puede actualizar una lista de productos idéntica";
     public static final String PARAMETRO_NULO = "El parámetro de entrada no puede ser nulo";
+    public static final String PRODUCTOS_NOT_FOUND = "Productos con id %s no encontrados";
 }

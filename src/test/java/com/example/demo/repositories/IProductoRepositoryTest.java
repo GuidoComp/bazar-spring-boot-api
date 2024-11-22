@@ -34,6 +34,13 @@ class IProductoRepositoryTest {
     void findByCantidadDisponibleLessThan() {
         List<Producto> productos = repository.findByCantidadDisponibleLessThan(5);
         assertEquals(2, productos.size());
+    }
 
+    @Test
+    void findAllByIds() {
+        List<Producto> productos = repository.findAllById(List.of(1L, 10L, 3L));
+        assertEquals(2, productos.size());
+        assertEquals(1L, productos.get(0).getProductoId());
+        assertEquals(3L, productos.get(1).getProductoId());
     }
 }

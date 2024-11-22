@@ -3,10 +3,8 @@ package com.example.demo.services;
 import com.example.demo.datos.clientes.ClienteDatos;
 import com.example.demo.datos.productos.ProductoDatos;
 import com.example.demo.datos.ventas.VentaDatos;
-import com.example.demo.dtos.requestDTOs.productoDTOs.UpdateProductoDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.AddVentaDTO;
 import com.example.demo.dtos.requestDTOs.ventaDTOs.UpdateVentaDTO;
-import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
@@ -19,7 +17,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +70,7 @@ class VentaServiceTest {
 
     @Test
     void addVenta() {
-        AddVentaDTO addVentaDTO = VentaDatos.crearVenta1DTO();
+        AddVentaDTO addVentaDTO = VentaDatos.crearAddVenta1DTO();
         Venta nuevaVenta = VentaDatos.crearVenta1ConProductosYCliente();
         InOrder inOrder = inOrder(ventaRepository, clienteService, productoService, mapper);
 

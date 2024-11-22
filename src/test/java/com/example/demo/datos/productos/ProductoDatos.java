@@ -48,8 +48,12 @@ public class ProductoDatos {
         return new ProductoResponseDTO(1L, "Procesador", "Intel Core i5 14600KF", 400000.0, 10.0);
     }
 
-    public static AddProductoDTO crearAddProductoDTO() {
+    public static AddProductoDTO crearAddProducto1DTO() {
         return new AddProductoDTO("Procesador", "Intel Core i5 14600KF", 400000.0, 10.0);
+    }
+
+    public static AddProductoDTO crearAddProducto2DTO() {
+        return new AddProductoDTO("Placa de video", "NVidia RTX 3090", 600000.0, 3.0);
     }
 
     public static List<Producto> crearProductosSinVentas() {

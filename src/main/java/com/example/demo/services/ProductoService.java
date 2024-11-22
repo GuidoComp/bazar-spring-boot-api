@@ -16,10 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.Transient;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -88,8 +86,26 @@ public class ProductoService implements IProductoService {
     @Override
     @Transactional(readOnly = true)
     public List<Producto> getProductosByIds(List<Long> idsProductos) {
-        return productoRepository.findAllById(idsProductos);
+        List<Producto> productos = productoRepository.findAllById(idsProductos);
+        checkProductos(idsProductos, productos);
+        return productos;
     }
+
+    private void checkProductos(List<Long> idsProductos, List<Producto> productos) {
+        List<Long> idsProductosEncontrados = productos.stream()
+                .mapToLong(Producto::getProductoId)
+                .boxed()
+                .collect(Collectors.toList());
+
+        List<Long> productosNoEncontrados = idsProductos.stream()
+                .filter(id -> !idsProductosEncontrados.contains(id))
+                .collect(Collectors.toList());
+
+        if (!productosNoEncontrados.isEmpty()) {
+            throw new ResourceNotFoundException(String.format(ErrorMsgs.PRODUCTOS_NOT_FOUND, productosNoEncontrados));
+        }
+    }
+
 
     @Override
     @Transactional(readOnly = true)
