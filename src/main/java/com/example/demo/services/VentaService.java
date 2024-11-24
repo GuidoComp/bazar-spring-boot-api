@@ -8,23 +8,18 @@ import com.example.demo.dtos.responseDTOs.ventaDTOs.InfoMayorVenta;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.MontoYCantidadTotalDTO;
 import com.example.demo.dtos.responseDTOs.ventaDTOs.VentaResponseDTO;
 import com.example.demo.exceptions.EqualProductsIds;
-import com.example.demo.exceptions.NoStockException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.Cliente;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Venta;
 import com.example.demo.repositories.IVentaRepository;
 import com.example.demo.utils.ErrorMsgs;
-import com.example.demo.utils.GenericModelMapper;
 import com.example.demo.utils.IModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class VentaService implements IVentaService {

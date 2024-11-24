@@ -56,7 +56,8 @@ class ProductoServiceIntegrationTest {
     void addProductoExistenteLanzaExcepcion() {
         AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
 
-        assertThrows(RestrictException.class, () -> service.addProducto(addProductoDTO), ErrorMsgs.PRODUCTO_YA_INGRESADO);
+        RestrictException restrictException = assertThrows(RestrictException.class, () -> service.addProducto(addProductoDTO));
+        assertEquals(restrictException.getMessage(), ErrorMsgs.PRODUCTO_YA_INGRESADO);
     }
 
     @Test
@@ -109,7 +110,7 @@ class ProductoServiceIntegrationTest {
     @Order(8)
     void getProductosByIds() {
         service.addProducto(new AddProductoDTO("Monitor 27", "Samsung", 100.0, 10.0));
-        List<Producto> productos = service.getProductosByIds(List.of(1L, 2L, 5L, 3L));
+        List<Producto> productos = service.getProductosByIds(List.of(2L, 3L));
 
         assertNotNull(productos);
         assertEquals(2, productos.size());

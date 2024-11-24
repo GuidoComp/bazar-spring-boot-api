@@ -1,6 +1,5 @@
 package com.example.demo.repositories;
 
-import com.example.demo.datos.clientes.ClienteDatos;
 import com.example.demo.datos.ventas.VentaDatos;
 import com.example.demo.models.Venta;
 import org.junit.jupiter.api.BeforeEach;

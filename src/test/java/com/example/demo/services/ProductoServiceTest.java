@@ -249,9 +249,8 @@ class ProductoServiceTest {
     void getProductosByIdsNotFound() {
         when(productoRepository.findAllById(anyList())).thenReturn(new ArrayList<>());
 
-        var productos = productoService.getProductosByIds(List.of(1L, 2L));
-
-        assertTrue(productos.isEmpty());
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> productoService.getProductosByIds(List.of(1L, 2L)));
+        assertEquals(String.format(ErrorMsgs.PRODUCTOS_NOT_FOUND, "[1, 2]"), exception.getMessage());
     }
 
     @Test

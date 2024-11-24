@@ -22,11 +22,11 @@ class IProductoRepositoryTest {
     @BeforeEach
     void setUp() {
         repository.saveAll(List.of(
-                new Producto(1L, "Procesador", "Intel Core i5 14600KF", 400000.0, 1.0),
-                new Producto(2L, "Placa de video", "Nvidia RTX 3060", 500000.0, 4.0),
-                new Producto(3L, "Placa de video", "Nvidia RTX 3070", 600000.0, 5.0),
-                new Producto(4L, "Placa de video", "Nvidia RTX 3080", 700000.0, 7.0),
-                new Producto(5L, "Placa de video", "Nvidia RTX 3090", 800000.0, 10.0)
+                new Producto(null, "Procesador", "Intel Core i5 14600KF", 400000.0, 1.0),
+                new Producto(null, "Placa de video", "Nvidia RTX 3060", 500000.0, 4.0),
+                new Producto(null, "Placa de video", "Nvidia RTX 3070", 600000.0, 5.0),
+                new Producto(null, "Placa de video", "Nvidia RTX 3080", 700000.0, 7.0),
+                new Producto(null, "Placa de video", "Nvidia RTX 3090", 800000.0, 10.0)
         ));
     }
 
@@ -38,9 +38,13 @@ class IProductoRepositoryTest {
 
     @Test
     void findAllByIds() {
-        List<Producto> productos = repository.findAllById(List.of(1L, 10L, 3L));
+        List<Producto> productosGuardados = repository.findAll();
+        Long id1 = productosGuardados.get(0).getProductoId();
+        Long id2 = productosGuardados.get(1).getProductoId();
+
+        List<Producto> productos = repository.findAllById(List.of(id1, id2));
         assertEquals(2, productos.size());
-        assertEquals(1L, productos.get(0).getProductoId());
-        assertEquals(3L, productos.get(1).getProductoId());
+        assertEquals(id1, productos.get(0).getProductoId());
+        assertEquals(id2, productos.get(1).getProductoId());
     }
 }
