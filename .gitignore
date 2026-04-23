@@ -34,3 +34,11 @@ build/
 .vscode/
 
 .m2/
+
+### Claude Code ###
+.claude/
+
+### docs (personal, no commit) ###
+docs/.obsidian/
+docs/architecture-audit-2026-04.md
+docs/recursive-riding-kay.md
