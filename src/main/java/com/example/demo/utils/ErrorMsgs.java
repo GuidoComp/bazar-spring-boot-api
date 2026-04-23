@@ -37,4 +37,10 @@ public class ErrorMsgs {
     public static final String UPDATE_PRODUCTOS_NO_PERMITIDO = "No se puede actualizar una lista de productos idéntica";
     public static final String PARAMETRO_NULO = "El parámetro de entrada no puede ser nulo";
     public static final String PRODUCTOS_NOT_FOUND = "Productos con id %s no encontrados";
+    public static final String REGISTER_FIRSTNAME_REQUIRED = "El nombre es requerido";
+    public static final String REGISTER_LASTNAME_REQUIRED = "El apellido es requerido";
+    public static final String REGISTER_EMAIL_REQUIRED = "El email es requerido";
+    public static final String REGISTER_EMAIL_INVALID = "El email no tiene un formato válido";
+    public static final String REGISTER_PASSWORD_REQUIRED = "La contraseña es requerida";
+    public static final String REGISTER_PASSWORD_MIN_LENGTH = "La contraseña debe tener al menos 8 caracteres";
 }
