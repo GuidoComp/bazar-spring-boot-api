@@ -28,6 +28,13 @@ Para configurar y ejecutar este proyecto localmente, sigue estos pasos:
    spring.datasource.url=${DB_URL}
    spring.datasource.username=${DB_USERNAME}
    spring.datasource.password=${DB_PASSWORD}
+   jwt.secret=${JWT_SECRET}
+   ```
+   El `JWT_SECRET` debe tener al menos 32 bytes (256 bits) para HS256. Para generar uno:
+   ```bash
+   openssl rand -base64 48 | cut -c1-48
+   ```
+   Si la variable no está seteada o es demasiado corta, la app falla al startup con un mensaje claro.
 4. Instala las dependencias del proyecto con:
    mvn install
 5. Ejecuta la aplicación utilizando:
