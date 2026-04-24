@@ -42,6 +42,24 @@ Para configurar y ejecutar este proyecto localmente, sigue estos pasos:
 
 La aplicación estará disponible en `http://localhost:8080`.
 
+## Profiles
+
+El proyecto usa tres profiles de Spring:
+
+- **`dev`** (default): para desarrollo local. Logging verbose, `ddl-auto=validate` (Hibernate valida el schema contra las entidades, no lo modifica), Flyway habilitado con `baseline-on-migrate=true`. Se activa solo si no hay otro profile seteado.
+- **`prod`**: para producción. Logging quieto, `ddl-auto=validate`, Flyway con `baseline-on-migrate=false` (exige migraciones explícitas desde V1). Se activa con `SPRING_PROFILES_ACTIVE=prod`.
+- **`test`**: se activa automáticamente con `@ActiveProfiles("test")` en los tests. `ddl-auto=create-drop`, Flyway deshabilitado — Hibernate genera el schema al levantar el contexto de test.
+
+## Migraciones (Flyway)
+
+Las migraciones están en `src/main/resources/db/migration/` y se aplican automáticamente al arrancar en `dev` y `prod`. Para agregar una nueva:
+
+1. Crear un archivo `V<N>__descripcion.sql` incrementando el número (ej. `V2__add_email_unique_constraint.sql`).
+2. Escribir DDL/DML puro.
+3. Al arrancar, Flyway detecta la nueva versión y la aplica; Hibernate valida que el schema resultante coincida con las entidades.
+
+Si al arrancar `validate` reporta `SchemaManagementException: Schema-validation: missing column [...]`, significa que una entidad tiene un campo que no está en el schema — hay que agregar la migración correspondiente.
+
 ## Endpoints
 Los endpoints de la API están documentados y se pueden consultar a través de Swagger en la siguiente dirección una vez que el proyecto esté en ejecución:
 [Swagger UI](http://localhost:8080/swagger-ui/index.html)
