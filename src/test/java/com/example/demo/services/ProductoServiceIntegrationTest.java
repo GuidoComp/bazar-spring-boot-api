@@ -9,14 +9,11 @@ import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.RestrictException;
 import com.example.demo.models.Producto;
 import com.example.demo.utils.ErrorMsgs;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,13 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Transactional
 class ProductoServiceIntegrationTest {
     @Autowired
     IProductoService service;
 
     @Test
-    @Order(1)
     void getProductosEmpty() {
         var productos = service.getProductos();
 
@@ -39,67 +35,59 @@ class ProductoServiceIntegrationTest {
     }
 
     @Test
-    @Order(2)
     void addProducto() {
         AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
 
-        var productoResponseDTO = service.addProducto(addProductoDTO);
+        ProductoResponseDTO productoResponseDTO = service.addProducto(addProductoDTO);
 
         assertNotNull(productoResponseDTO);
+        assertNotNull(productoResponseDTO.getProductoId());
         assertEquals(addProductoDTO.getNombre(), productoResponseDTO.getNombre());
         assertEquals(addProductoDTO.getMarca(), productoResponseDTO.getMarca());
-        assertEquals(1L, productoResponseDTO.getProductoId());
+        assertEquals(addProductoDTO.getCosto(), productoResponseDTO.getCosto());
+        assertEquals(addProductoDTO.getCantidadDisponible(), productoResponseDTO.getCantidadDisponible());
     }
 
     @Test
-    @Order(3)
     void addProductoExistenteLanzaExcepcion() {
         AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
+        service.addProducto(addProductoDTO);
 
         RestrictException restrictException = assertThrows(RestrictException.class, () -> service.addProducto(addProductoDTO));
         assertEquals(restrictException.getMessage(), ErrorMsgs.PRODUCTO_YA_INGRESADO);
     }
 
     @Test
-    @Order(4)
     void deleteProducto() {
         AddProductoDTO addProductoDTO = ProductoDatos.crearAddProducto1DTO();
+        ProductoResponseDTO creado = service.addProducto(addProductoDTO);
 
-        ProductoResponseDTO productoResponseDTO = service.deleteProducto(1L);
+        ProductoResponseDTO eliminado = service.deleteProducto(creado.getProductoId());
 
-        assertNotNull(productoResponseDTO);
-        assertEquals(1L, productoResponseDTO.getProductoId());
-        assertEquals(addProductoDTO.getNombre(), productoResponseDTO.getNombre());
-        assertEquals(addProductoDTO.getMarca(), productoResponseDTO.getMarca());
+        assertNotNull(eliminado);
+        assertEquals(creado.getProductoId(), eliminado.getProductoId());
+        assertEquals(addProductoDTO.getNombre(), eliminado.getNombre());
+        assertEquals(addProductoDTO.getMarca(), eliminado.getMarca());
         assertFalse(service.productoExistente(addProductoDTO.getNombre(), addProductoDTO.getMarca()));
     }
 
     @Test
-    @Order(5)
     void deleteProductoInexistenteLanzaExcepcion() {
-        assertThrows(ResourceNotFoundException.class, () -> service.deleteProducto(1L), ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id 1");
+        assertThrows(ResourceNotFoundException.class, () -> service.deleteProducto(9999L), ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id 9999");
     }
 
-//    @Test
-//    @Order(6)
-//    void deleteProductoConVentasLanzaExcepcion() {
-//        AddProductoDTO addProductoDTO = Datos.ADD_PRODUCTO_DTO;
-//
-//        service.addProducto(addProductoDTO);
-//
-//        assertThrows(RestrictException.class, () -> service.deleteProducto(2L), ErrorMsgs.DELETE_PRODUCTO_RESTRICCION_FK);
-//    }
-
-
     @Test
-    @Order(7)
     void updateProducto() {
         AddProductoDTO addProductoDto = ProductoDatos.crearAddProducto1DTO();
-        service.addProducto(addProductoDto);
-        ProductoResponseDTO productoResponseDTO = service.updateProducto(2L, new UpdateProductoDTO("Nuevo nombre", "Nueva marca", null, null));
+        ProductoResponseDTO creado = service.addProducto(addProductoDto);
+
+        ProductoResponseDTO productoResponseDTO = service.updateProducto(
+                creado.getProductoId(),
+                new UpdateProductoDTO("Nuevo nombre", "Nueva marca", null, null)
+        );
 
         assertNotNull(productoResponseDTO);
-        assertEquals(2L, productoResponseDTO.getProductoId());
+        assertEquals(creado.getProductoId(), productoResponseDTO.getProductoId());
         assertEquals("Nuevo nombre", productoResponseDTO.getNombre());
         assertEquals("Nueva marca", productoResponseDTO.getMarca());
         assertEquals(addProductoDto.getCosto(), productoResponseDTO.getCosto());
@@ -107,22 +95,23 @@ class ProductoServiceIntegrationTest {
     }
 
     @Test
-    @Order(8)
     void getProductosByIds() {
-        service.addProducto(new AddProductoDTO("Monitor 27", "Samsung", 100.0, 10.0));
-        List<Producto> productos = service.getProductosByIds(List.of(2L, 3L));
+        ProductoResponseDTO p1 = service.addProducto(new AddProductoDTO("Procesador", "Intel Core i5 14600KF", 400000.0, 10.0));
+        ProductoResponseDTO p2 = service.addProducto(new AddProductoDTO("Monitor 27", "Samsung", 100.0, 10.0));
+
+        List<Producto> productos = service.getProductosByIds(List.of(p1.getProductoId(), p2.getProductoId()));
 
         assertNotNull(productos);
         assertEquals(2, productos.size());
-        assertEquals(2L, productos.get(0).getProductoId());
-        assertEquals("Nuevo nombre", productos.get(0).getNombre());
-        assertEquals("Monitor 27", productos.get(1).getNombre());
+        assertTrue(productos.stream().anyMatch(p -> p.getProductoId().equals(p1.getProductoId()) && "Procesador".equals(p.getNombre())));
+        assertTrue(productos.stream().anyMatch(p -> p.getProductoId().equals(p2.getProductoId()) && "Monitor 27".equals(p.getNombre())));
     }
 
     @Test
-    @Order(9)
     void getProductosConStockBajo() {
+        service.addProducto(new AddProductoDTO("Procesador", "Intel Core i5 14600KF", 400000.0, 10.0));
         service.addProducto(new AddProductoDTO("Monitor 22", "Samsung", 100.0, 3.0));
+
         List<ProductoResponseDTO> productosConStockBajo = service.getProductosConStockBajo();
 
         assertNotNull(productosConStockBajo);
@@ -131,21 +120,21 @@ class ProductoServiceIntegrationTest {
     }
 
     @Test
-    @Order(10)
     void productoExistente() {
+        service.addProducto(new AddProductoDTO("Monitor 22", "Samsung", 100.0, 3.0));
+
         boolean productoExistente = service.productoExistente("Monitor 22", "Samsung");
+
         assertTrue(productoExistente);
     }
 
     @Test
-    @Order(11)
     void productoNoExistente() {
         boolean productoExistente = service.productoExistente("SubLow", "Meyer Sound");
         assertFalse(productoExistente);
     }
 
     @Test
-    @Order(12)
     void checkStock() {
         assertThrows(NoStockException.class, () -> service.checkStock(new Producto(1L, "Monitor 22", "Samsung", 100.0, 0.0)));
     }

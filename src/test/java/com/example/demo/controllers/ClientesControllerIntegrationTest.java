@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest //Pruebas de integración, carga componentes.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
+@Transactional
 public class ClientesControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
@@ -29,7 +31,6 @@ public class ClientesControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        clienteService.deleteAllClientes();
         AddClienteDTO addClienteDTO = new AddClienteDTO("nombre 1", "apellido 1", "36158199");
         clienteService.addCliente(addClienteDTO);
     }

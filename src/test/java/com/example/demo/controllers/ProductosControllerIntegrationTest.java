@@ -1,6 +1,10 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dtos.requestDTOs.productoDTOs.AddProductoDTO;
+import com.example.demo.dtos.responseDTOs.productoDTOs.ProductoResponseDTO;
+import com.example.demo.services.IProductoService;
 import com.example.demo.utils.ErrorMsgs;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -17,10 +22,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false) //Spring configura MockMVC sin necesidad de crear Mocks
 @ActiveProfiles("test")
+@Transactional
 class ProductosControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private IProductoService productoService;
+
+    private Long seedProductoId;
+
+    @BeforeEach
+    void setUp() {
+        ProductoResponseDTO seed = productoService.addProducto(
+                new AddProductoDTO("Seed", "SeedMarca", 50.0, 5.0)
+        );
+        seedProductoId = seed.getProductoId();
+    }
 
     @Test
     void getProductos() throws Exception {
@@ -66,7 +85,7 @@ class ProductosControllerIntegrationTest {
     @Test
     @WithMockUser(authorities = "ADMIN")
     void deleteProduct() throws Exception {
-        mockMvc.perform(delete("/productos/delete/1"))
+        mockMvc.perform(delete("/productos/delete/{id}", seedProductoId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Producto eliminado correctamente"));
     }
@@ -74,16 +93,16 @@ class ProductosControllerIntegrationTest {
     @Test
     @WithMockUser(authorities = "ADMIN")
     void deleteProductFail() throws Exception {
-        mockMvc.perform(delete("/productos/delete/100"))
+        mockMvc.perform(delete("/productos/delete/9999"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + 100));
+                .andExpect(jsonPath("$.message").value(ErrorMsgs.PRODUCTO_NOT_FOUND + " con el id " + 9999));
     }
 
     @Test
     @WithMockUser(authorities = "ADMIN")
     void updateProduct() throws Exception {
         String jsonBody = "{\"nombre\": \"nombre 1\", \"marca\": \"marca 1\", \"costo\": 100.0, \"cantidadDisponible\": 10.0}";
-        mockMvc.perform(put("/productos/edit/1")
+        mockMvc.perform(put("/productos/edit/{id}", seedProductoId)
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -98,9 +117,7 @@ class ProductosControllerIntegrationTest {
     @WithMockUser(authorities = "ADMIN")
     void updateProductFailNotFound() throws Exception {
         String jsonBody = "{\"nombre\": \"nombre 1\", \"marca\": \"marca 1\", \"costo\": 100.0, \"cantidadDisponible\": 10.0}";
-        //String jsonBody = "{\"nombre\": \"\", \"marca\": null, \"costo\": -100.0, \"cantidadDisponible\": 10.0}";
-        Long id = 10L;
-        mockMvc.perform(put("/productos/edit/{id}", id)
+        mockMvc.perform(put("/productos/edit/{id}", 9999L)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -112,8 +129,7 @@ class ProductosControllerIntegrationTest {
     @WithMockUser(authorities = "ADMIN")
     void shouldUpdateOnlyValidAttributes() throws Exception {
         String jsonBody = "{\"marca\": \"Ayudín\", \"costo\": 100.0}";
-        Long id = 1L;
-        mockMvc.perform(put("/productos/edit/{id}", id)
+        mockMvc.perform(put("/productos/edit/{id}", seedProductoId)
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
