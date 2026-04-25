@@ -1,0 +1,22 @@
+package com.gcompagno.ecommerce.dtos.requestDTOs.productoDTOs;
+
+import com.gcompagno.ecommerce.utils.ErrorMsgs;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UpdateProductoDTO {
+    @Length(min = 3, max = 200, message = ErrorMsgs.NOMBRE_PRODUCTO_LENGTH)
+    private String nombre;
+    @Length(min = 3, max = 200, message = ErrorMsgs.MARCA_LENGTH)
+    private String marca;
+    @Positive(message = ErrorMsgs.COSTO_NEGATIVO)
+    private Double costo;
+    @PositiveOrZero(message = ErrorMsgs.CANTIDAD_NEGATIVA)
+    private Double cantidadDisponible;
+}
