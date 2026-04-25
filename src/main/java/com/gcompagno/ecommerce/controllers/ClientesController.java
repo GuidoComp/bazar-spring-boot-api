@@ -7,6 +7,10 @@ import com.gcompagno.ecommerce.services.IClienteService;
 import com.gcompagno.ecommerce.services.IProductoService;
 import com.gcompagno.ecommerce.services.IVentaService;
 import com.gcompagno.ecommerce.utils.ResponseWithMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
+@Tag(name = "Clientes", description = "Gestión de clientes del bazar. Lectura abierta a usuarios autenticados; escritura solo ADMIN.")
 public class ClientesController {
 
     private final IProductoService productoService;
@@ -29,11 +34,25 @@ public class ClientesController {
         this.clienteService = clienteService;
     }
 
+    @Operation(summary = "Listar todos los clientes")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de clientes"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Token sin permisos suficientes")
+    })
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> getClientes() {
         return ResponseEntity.ok(clienteService.getClientes());
     }
 
+    @Operation(summary = "Crear un cliente", description = "Requiere rol ADMIN. El DNI debe ser único.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente creado"),
+            @ApiResponse(responseCode = "400", description = "Body inválido"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN"),
+            @ApiResponse(responseCode = "409", description = "DNI ya registrado")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
@@ -43,6 +62,13 @@ public class ClientesController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Eliminar un cliente por id", description = "Requiere rol ADMIN.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente eliminado"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN"),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
@@ -52,6 +78,14 @@ public class ClientesController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Editar un cliente por id", description = "Requiere rol ADMIN. Solo se actualizan los campos enviados.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente actualizado"),
+            @ApiResponse(responseCode = "400", description = "Body inválido"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN"),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/edit/{id}")

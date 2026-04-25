@@ -6,6 +6,11 @@ import com.gcompagno.ecommerce.dtos.responseDTOs.productoDTOs.ProductoResponseDT
 import com.gcompagno.ecommerce.services.IClienteService;
 import com.gcompagno.ecommerce.services.IProductoService;
 import com.gcompagno.ecommerce.services.IVentaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/productos")
+@Tag(name = "Productos", description = "Catálogo de productos. Lectura abierta; alta/edición/baja y reportes solo ADMIN.")
 public class ProductosController {
 
     private final IProductoService productoService;
@@ -27,11 +33,22 @@ public class ProductosController {
         this.clienteService = clienteService;
     }
 
+    @Operation(summary = "Listar todos los productos", description = "Endpoint público (no requiere token).")
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "Lista de productos"))
+    @SecurityRequirements
     @GetMapping
     public ResponseEntity<List<ProductoResponseDTO>> getProductos() {
         return ResponseEntity.ok(productoService.getProductos());
     }
 
+    @Operation(summary = "Crear un producto", description = "Requiere rol ADMIN. La combinación nombre+marca debe ser única.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Producto creado"),
+            @ApiResponse(responseCode = "400", description = "Body inválido"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN"),
+            @ApiResponse(responseCode = "409", description = "Producto (nombre+marca) ya existe")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
@@ -39,6 +56,13 @@ public class ProductosController {
         return ResponseEntity.ok(productoService.addProducto(addProductoDTO));
     }
 
+    @Operation(summary = "Eliminar un producto por id", description = "Requiere rol ADMIN.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Producto eliminado"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
@@ -47,6 +71,14 @@ public class ProductosController {
         return ResponseEntity.ok("Producto eliminado correctamente");
     }
 
+    @Operation(summary = "Editar un producto por id", description = "Requiere rol ADMIN. Solo se actualizan los campos enviados.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Producto actualizado"),
+            @ApiResponse(responseCode = "400", description = "Body inválido"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/edit/{id}")
@@ -56,6 +88,12 @@ public class ProductosController {
         return ResponseEntity.ok(productoResponseDTO);
     }
 
+    @Operation(summary = "Listar productos con stock bajo", description = "Requiere rol ADMIN.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de productos con poco stock"),
+            @ApiResponse(responseCode = "401", description = "Falta token"),
+            @ApiResponse(responseCode = "403", description = "Sin rol ADMIN")
+    })
     //@PreAuthorize("hasRole('ADMIN')")
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/falta_stock")
