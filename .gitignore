@@ -1,6 +1,6 @@
 HELP.md
 target/
-!target/demo-0.0.1.jar
+!target/ecommerce-0.0.1.jar
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -34,3 +34,11 @@ build/
 .vscode/
 
 .m2/
+
+### Claude Code ###
+.claude/
+
+### docs (personal, no commit) ###
+docs/.obsidian/
+docs/architecture-audit-2026-04.md
+docs/recursive-riding-kay.md
