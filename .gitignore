@@ -37,6 +37,7 @@ build/
 
 ### Claude Code ###
 .claude/
+CLAUDE.md
 
 ### docs (personal, no commit) ###
 docs/.obsidian/
